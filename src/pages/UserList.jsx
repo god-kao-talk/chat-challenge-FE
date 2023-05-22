@@ -45,12 +45,12 @@ function UserList() {
     closeModal();
   };
 
-  // useEffect(() => {
-  //   getMyProfile();
-  //   getUsersList();
-  //   getChatRoomList();
-  //   happyBirthday();
-  // }, []);
+  useEffect(() => {
+    // getMyProfile();
+    // getUsersList();
+    getChatRoomList();
+    // happyBirthday();
+  }, []);
 
   //내 정보 조회
   // const getMyProfile = async () => {
@@ -77,8 +77,21 @@ function UserList() {
 
   // 체팅방리스트 조회
   const getChatRoomList = async () => {
-    const response = await axios.get("/room");
-    setChatRooms(response.data);
+    const Authorization = Cookies.get('Authorization')
+    console.log(Authorization)
+    try {
+      const response = await axios.get(
+        "/room",
+        {
+          headers: {
+            Authorization: `Bearer ${Authorization}`,
+          },
+        }
+      );
+      setChatRooms(response.data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
   // console.log('chatRooms : ', chatRooms)
 
