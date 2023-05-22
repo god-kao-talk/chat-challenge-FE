@@ -12,6 +12,8 @@ import {
   IconButton,
 } from "@mui/material";
 import chatroom from "../img/chatroom.png";
+import { Cookie } from "@mui/icons-material";
+import Cookies from 'js-cookie';
 
 function UserList() {
   const [userList, setUserList] = useState([]);
@@ -43,35 +45,35 @@ function UserList() {
     closeModal();
   };
 
-  useEffect(() => {
-    getMyProfile();
-    getUsersList();
-    getChatRoomList();
-    happyBirthday();
-  }, []);
+  // useEffect(() => {
+  //   getMyProfile();
+  //   getUsersList();
+  //   getChatRoomList();
+  //   happyBirthday();
+  // }, []);
 
   //내 정보 조회
-  const getMyProfile = async () => {
-    const response = await axios.get("/users/mypage");
-    setMyProfile(response.data);
-  };
+  // const getMyProfile = async () => {
+  //   const response = await axios.get("/users/mypage");
+  //   setMyProfile(response.data);
+  // };
 
   // 생일 미리 보기
-  const happyBirthday = async () => {
-    const response = await axios.get("/users/mypage/birthday");
-    setBirthday(response.data);
-  };
+  // const happyBirthday = async () => {
+  //   const response = await axios.get("/users/mypage/birthday");
+  //   setBirthday(response.data);
+  // };
 
   // 유저목록 조회
-  const getUsersList = async () => {
-    try {
-      const response = await axios.get("/users/user-info");
-      setUserList(response.data);
-      // console.log(response.data)
-    } catch (error) {
-      console.error("실패시 에러:", error);
-    }
-  };
+  // const getUsersList = async () => {
+  //   try {
+  //     const response = await axios.get("/users/user-info");
+  //     setUserList(response.data);
+  //     // console.log(response.data)
+  //   } catch (error) {
+  //     console.error("실패시 에러:", error);
+  //   }
+  // };
 
   // 체팅방리스트 조회
   const getChatRoomList = async () => {
@@ -82,7 +84,8 @@ function UserList() {
 
   // 방생성
   const addChatRoom = async () => {
-    const ACCESS_KEY = localStorage.getItem("ACCESS_KEY");
+    const Authorization = Cookies.get('Authorization')
+    console.log(Authorization)
     try {
       const response = await axios.post(
         "/chat",
@@ -91,7 +94,7 @@ function UserList() {
         },
         {
           headers: {
-            ACCESS_KEY: `bearer ${ACCESS_KEY}`,
+            Authorization: `Bearer ${Authorization}`,
           },
         }
       );
