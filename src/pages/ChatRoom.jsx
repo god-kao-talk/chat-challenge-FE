@@ -8,6 +8,7 @@ import { useQuery, useMutation } from "react-query";
 import { useParams } from "react-router-dom";
 import { submitPicture } from "../api/api";
 import Header from "../components/Header";
+import Cookies from 'js-cookie';
 
 function ChatRoom() {
   // 입력값 상태관리
@@ -21,6 +22,7 @@ function ChatRoom() {
   const [whoIAm, setWhoIAm] = useState(null);
   useEffect(() => {
     setWhoIAm(chatRoomInfo.userId);
+    console.log("내가 누구냐면 :", chatRoomInfo.userId);
   }, [chatRoomInfo]);
 
   // 스크롤 부분(채팅방 입장시 가장 아래로, 채팅로그가 업데이트 될 때마다 가장 아래로)
@@ -30,9 +32,9 @@ function ChatRoom() {
       (scrollRef.current.scrollTop = scrollRef.current.scrollHeight);
   }, [messageList]);
 
-  // 토큰 로컬 스토리지에서 추출
-  const token = localStorage.getItem("ACCESS_KEY");
-
+  // 토큰 로컬 스토리지에서 추출--> 쿠키에서 추출
+  const token = Cookies.get('Authorization');
+  // const bearerToken =  `Bearer ${token}`;
   // 방 아이디 추출
   const params = useParams();
   const roomId = params.id;
@@ -40,7 +42,7 @@ function ChatRoom() {
   //방 정보 받아오기
   const { isLoading, isError, data } = useQuery(
     "receiveRoomInfo",
-    () => receiveChatRoomInfo({ token, roomId }),
+    () => receiveChatRoomInfo({token, roomId }),
     { refetchOnWindowFocus: false, refetchOnMount: false }
   );
 
@@ -94,7 +96,9 @@ function ChatRoom() {
   useEffect(() => {
     let stompClient = null;
     if (data) {
+      console.log("data가 있어! : ", data)
       setChatRoomInfo(data);
+      console.log("chatRoomInfo 설정중! : ", chatRoomInfo)
       // 소켓 연결
       stompClient = new Client({
         webSocketFactory: () =>
@@ -109,7 +113,8 @@ function ChatRoom() {
 
           stompClient.publish({
             destination: "/pub/chat/enter",
-            headers: { ACCESS_KEY: token },
+            headers: { Authentication: token },
+            // headers : {Authentication :`Bearer ${token}`},
             body: JSON.stringify({
               type: "ENTER",
               sender: data.sender,
@@ -122,7 +127,7 @@ function ChatRoom() {
         onDisconnect: () => {
           stompClient.publish({
             destination: "/pub/chat/leave",
-            headers: { ACCESS_KEY: token },
+            headers: { Authentication: token },
             body: JSON.stringify({
               type: "LEAVE",
               sender: data.sender,
@@ -140,7 +145,7 @@ function ChatRoom() {
       // 컴포넌트가 언마운트될 때 연결을 끊음
       stompClient && stompClient.deactivate();
     };
-  }, [data]);
+  }, [data, chatRoomInfo]);
 
   // useEffect(() => {
   //   const handleBeforeUnload = (event) => {
@@ -184,7 +189,7 @@ function ChatRoom() {
       messageInfo.message.trim() &&
       stompClient.publish({
         destination: "/pub/chat/send",
-        headers: { ACCESS_KEY: token },
+        headers: { Authentication: `Bearer ${token}`},//token },
         body: JSON.stringify(messageInfo),
       });
     setInput("");
@@ -201,7 +206,7 @@ function ChatRoom() {
     onSuccess: (response) => {
       stompClient.publish({
         destination: "/pub/chat/send",
-        headers: { ACCESS_KEY: token },
+        headers: { Authentication: token },
         body: JSON.stringify({
           type: "IMAGE",
           sender: chatRoomInfo.sender,
