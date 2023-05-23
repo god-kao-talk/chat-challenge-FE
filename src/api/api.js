@@ -43,7 +43,7 @@ const receiveMyPageInfo = async ({ token }) => {
   try {
     const response = await axios.get(
       `${process.env.REACT_APP_SERVER_URL}/users/mypage`,
-      { headers: { ACCESS_KEY: `${token}` } }
+      { headers: { Authorization: `Bearer ${token}` } }
     );
     return response.data;
   } catch (error) {
@@ -59,7 +59,7 @@ const editMyPageInfo = async ({ token, userInfo }) => {
     const response = await axios.put(
       `${process.env.REACT_APP_SERVER_URL}/users/mypage`,
       userInfoWithoutImage,
-      { headers: { ACCESS_KEY: `${token}` } }
+      { headers: { Authorization: `Bearer ${token}` } }
     );
     return response.data;
   } catch (error) {
