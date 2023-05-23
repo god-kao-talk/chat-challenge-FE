@@ -8,8 +8,11 @@ import { useQuery, useMutation } from "react-query";
 import { useParams } from "react-router-dom";
 import { submitPicture } from "../api/api";
 import Header from "../components/Header";
+import Cookies from 'js-cookie';
 
 function ChatRoom() {
+  // console.log("채팅방 환경입니다.")
+
   // 입력값 상태관리
   const [input, setInput] = useState("");
   const [messageList, setMessageList] = useState([]);
@@ -20,6 +23,7 @@ function ChatRoom() {
   // 채팅방에 입장한 본인이 누구인지를 상태관리
   const [whoIAm, setWhoIAm] = useState(null);
   useEffect(() => {
+    console.log("setWhoIam 이 설정중! : ", whoIAm)
     setWhoIAm(chatRoomInfo.userId);
   }, [chatRoomInfo]);
 
@@ -30,8 +34,8 @@ function ChatRoom() {
       (scrollRef.current.scrollTop = scrollRef.current.scrollHeight);
   }, [messageList]);
 
-  // 토큰 로컬 스토리지에서 추출
-  const token = localStorage.getItem("ACCESS_KEY");
+  // 쿠키에서 토큰 추출
+  const token = Cookies.get('Authorization')
 
   // 방 아이디 추출
   const params = useParams();
@@ -94,7 +98,9 @@ function ChatRoom() {
   useEffect(() => {
     let stompClient = null;
     if (data) {
+      console.log("data가 있어! : ", data)
       setChatRoomInfo(data);
+      console.log("chatRoomInfo 설정중! : ", chatRoomInfo)
       // 소켓 연결
       stompClient = new Client({
         webSocketFactory: () =>
@@ -140,7 +146,7 @@ function ChatRoom() {
       // 컴포넌트가 언마운트될 때 연결을 끊음
       stompClient && stompClient.deactivate();
     };
-  }, [data]);
+  }, [data, chatRoomInfo]);
 
   // useEffect(() => {
   //   const handleBeforeUnload = (event) => {

@@ -25,8 +25,10 @@ function UserList() {
   const [birthday, setBirthday] = useState([]);
   const [detailProfile, setDetailProfile] = useState([]);
 
+  const Authorization = Cookies.get('Authorization')
+
   const navigate = useNavigate();
-  console.log(myProfile);
+  // console.log(myProfile);
 
   const openModal = () => {
     setAddRoom(true);
@@ -77,8 +79,7 @@ function UserList() {
 
   // 체팅방리스트 조회
   const getChatRoomList = async () => {
-    const Authorization = Cookies.get('Authorization')
-    console.log(Authorization)
+    console.log("채팅방리스트 조회")
     try {
       const response = await axios.get(
         "/room",
@@ -93,12 +94,9 @@ function UserList() {
       console.error("Error:", error);
     }
   };
-  // console.log('chatRooms : ', chatRooms)
 
   // 방생성
   const addChatRoom = async () => {
-    const Authorization = Cookies.get('Authorization')
-    console.log(Authorization)
     try {
       const response = await axios.post(
         "/chat",
@@ -130,15 +128,28 @@ function UserList() {
     // console.log('getUserDetailModal : ', detailProfile)
   };
 
+  //채팅방 입장시도
   const entryChatRoom = (roomId) => {
+    console.log("채팅방 입장시도")
     getEntryChatRoom(roomId);
-    // console.log('입장')
   };
 
+  //채팅방 입장하기
   const getEntryChatRoom = async (roomId) => {
-    const response = await axios.get(`/chat/${roomId}`);
-    // console.log('response : ', response.data)
-    navigate(`/ChatRoom/${roomId}`);
+    console.log("채팅방 입장하기", roomId)
+    try {
+      const response = await axios.get(
+        `/chat/${roomId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${Authorization}`,
+          },
+        }
+      );
+      navigate(`/ChatRoom/${roomId}`);
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (
