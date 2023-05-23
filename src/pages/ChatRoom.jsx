@@ -11,6 +11,8 @@ import Header from "../components/Header";
 import Cookies from 'js-cookie';
 
 function ChatRoom() {
+  // console.log("채팅방 환경입니다.")
+
   // 입력값 상태관리
   const [input, setInput] = useState("");
   const [messageList, setMessageList] = useState([]);
@@ -21,6 +23,7 @@ function ChatRoom() {
   // 채팅방에 입장한 본인이 누구인지를 상태관리
   const [whoIAm, setWhoIAm] = useState(null);
   useEffect(() => {
+    console.log("setWhoIam 이 설정중! : ", whoIAm)
     setWhoIAm(chatRoomInfo.userId);
     console.log("내가 누구냐면 :", chatRoomInfo.userId);
   }, [chatRoomInfo]);
@@ -32,9 +35,9 @@ function ChatRoom() {
       (scrollRef.current.scrollTop = scrollRef.current.scrollHeight);
   }, [messageList]);
 
-  // 토큰 로컬 스토리지에서 추출--> 쿠키에서 추출
-  const token = Cookies.get('Authorization');
-  // const bearerToken =  `Bearer ${token}`;
+  // 쿠키에서 토큰 추출
+  const token = Cookies.get('Authorization')
+
   // 방 아이디 추출
   const params = useParams();
   const roomId = params.id;
