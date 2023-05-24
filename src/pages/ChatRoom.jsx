@@ -9,16 +9,19 @@ import { useParams } from "react-router-dom";
 import { submitPicture } from "../api/api";
 import Header from "../components/Header";
 import Cookies from 'js-cookie';
+import {over} from 'stompjs';
 
+var stompClient =null;
 function ChatRoom() {
   // console.log("채팅방 환경입니다.")
 
   // 입력값 상태관리
   const [input, setInput] = useState("");
   const [messageList, setMessageList] = useState([]);
-  const [stompClient, setStompClient] = useState(null);
   const [chatRoomInfo, setChatRoomInfo] = useState({});
   const [uploadImage, setUploadImage] = useState(null);
+  const [publicChats, setPublicChats] = useState([]);
+  const [privateChats, setPrivateChats] = useState(new Map());
 
   // 채팅방에 입장한 본인이 누구인지를 상태관리
   const [whoIAm, setWhoIAm] = useState(null);
@@ -97,58 +100,65 @@ function ChatRoom() {
   // }, [data]);
 
   useEffect(() => {
-    let stompClient = null;
     if (data) {
       console.log("data가 있어! : ", data)
       setChatRoomInfo(data);
       console.log("chatRoomInfo 설정중! : ", chatRoomInfo)
-      // 소켓 연결
-      stompClient = new Client({
-        webSocketFactory: () =>
-          new SockJS(`${process.env.REACT_APP_SERVER_URL}/ws-edit`),
-        // 접속했을 때
-        onConnect: (frame) => {
-          setStompClient(stompClient);
-          // 구독상태 만들기
-          stompClient.subscribe("/sub/chat/room" + roomId, function (message) {
-            setMessageList((prev) => [...prev, JSON.parse(message.body)]);
-          });
-
-          stompClient.publish({
-            destination: "/pub/chat/enter",
-            headers: { Authentication: token },
-            // headers : {Authentication :`Bearer ${token}`},
-            body: JSON.stringify({
-              type: "ENTER",
-              sender: data.sender,
-              userId: data.userId,
-              roomId: data.roomId,
-              message: "",
-            }),
-          });
-        },
-        onDisconnect: () => {
-          stompClient.publish({
-            destination: "/pub/chat/leave",
-            headers: { Authentication: token },
-            body: JSON.stringify({
-              type: "LEAVE",
-              sender: data.sender,
-              userId: data.userId,
-              roomId: data.roomId,
-              message: "",
-            }),
-          });
-        },
-      });
-      stompClient.activate();
+      if (chatRoomInfo != null) {
+        // endpoint로 SockJS 객체, StompClient 객체 생성
+        let Sock = new SockJS('http://localhost:8080/ws-chat');
+        console.log("Sock 설정중! : ", Sock)
+        //do Handshake
+        stompClient = over(Sock);
+        console.log("stompClient 설정중! : ", stompClient)
+        // connect(header,연결 성공시 콜백,에러발생시 콜백)
+        stompClient.connect({},onConnected, onError);
+      }
     }
 
-    return () => {
-      // 컴포넌트가 언마운트될 때 연결을 끊음
-      stompClient && stompClient.deactivate();
-    };
   }, [data, chatRoomInfo]);
+
+  const onConnected = () => {
+    console.log("소켓 연결 시도중!")
+    // setUserData({...userData,"connected": true});
+    stompClient.subscribe('/topic/chat/room/' + roomId, function async (message) {
+      setMessageList( (prev) => [...prev, JSON.parse(message.body)]);
+    });
+    console.log("소켓 연결 시도중222!!!")
+    // stompClient.subscribe('/user/'+userData.username+'/private', onPrivateMessage);
+    userJoin();
+  }
+
+  const userJoin=()=>{
+    var chatMessage = {
+      type: "ENTER",
+      sender: data.sender,
+      userId: data.userId,
+      roomId: data.roomId,
+      message: ""
+    };
+    stompClient.send("/app/chat/enter", {}, JSON.stringify(chatMessage));
+  }
+
+  // const onMessageReceived = (payload)=>{
+  //   var payloadData = JSON.parse(payload.body);
+  //   switch(payloadData.status){
+  //       case "ENTER":
+  //           if(!privateChats.get(payloadData.senderName)){
+  //               privateChats.set(payloadData.senderName,[]);
+  //               setPrivateChats(new Map(privateChats));
+  //           }
+  //           break;
+  //       case "TALK":
+  //           publicChats.push(payloadData);
+  //           setPublicChats([...publicChats]);
+  //           break;
+  //   }
+  // }
+
+  const onError = (err) => {
+    console.log(err);
+  }
 
   // useEffect(() => {
   //   const handleBeforeUnload = (event) => {
@@ -185,16 +195,11 @@ function ChatRoom() {
       sender: chatRoomInfo.sender,
       userId: chatRoomInfo.userId,
       roomId: chatRoomInfo.roomId,
-      image: chatRoomInfo.image_url,
       message: input.trim(),
     };
     input &&
       messageInfo.message.trim() &&
-      stompClient.publish({
-        destination: "/pub/chat/send",
-        headers: { Authentication: `Bearer ${token}`},//token },
-        body: JSON.stringify(messageInfo),
-      });
+      stompClient.send("/app/chat/send", {},  JSON.stringify(messageInfo));
     setInput("");
   };
 
