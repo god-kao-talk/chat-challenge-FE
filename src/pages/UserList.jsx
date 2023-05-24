@@ -90,6 +90,7 @@ function UserList() {
         }
       );
       setChatRooms(response.data);
+      console.log("채팅방 리스트 정보!! : ", response.data)
     } catch (error) {
       console.error("Error:", error);
     }
@@ -129,32 +130,10 @@ function UserList() {
   };
 
   //채팅방 입장시도
-  const entryChatRoom = (roomId) => {
-    console.log("채팅방 입장시도")
-    getEntryChatRoom(roomId);
+  const entryChatRoom = async (roomId) => {
+    console.log("채팅방 입장하기")
+    navigate(`/ChatRoom/${roomId}`);
   };
-
-  //채팅방 입장하기
-  const getEntryChatRoom = async (roomId) => {
-    console.log("채팅방 입장하기", roomId)
-    try {
-      const response = await axios.get(
-        `/chat/${roomId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${Authorization}`,
-          },
-        }
-      );
-      navigate(`/ChatRoom/${roomId}`);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
-  
-
-  
 
   return (
     <>
