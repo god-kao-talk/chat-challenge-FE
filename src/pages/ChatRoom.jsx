@@ -104,17 +104,17 @@ function ChatRoom() {
       // 소켓 연결
       stompClient = new Client({
         webSocketFactory: () =>
-          new SockJS(`${process.env.REACT_APP_SERVER_URL}/ws-edit`),
+          new SockJS(`${process.env.REACT_APP_SERVER_URL}/ws-chat`),
         // 접속했을 때
         onConnect: (frame) => {
           setStompClient(stompClient);
           // 구독상태 만들기
-          stompClient.subscribe("/sub/chat/room" + roomId, function (message) {
+          stompClient.subscribe("/topic/chat/room" + roomId, function (message) {
             setMessageList((prev) => [...prev, JSON.parse(message.body)]);
           });
 
           stompClient.publish({
-            destination: "/pub/chat/enter",
+            destination: "/app/chat/enter",
             headers: { ACCESS_KEY: token },
             body: JSON.stringify({
               type: "ENTER",
@@ -127,7 +127,7 @@ function ChatRoom() {
         },
         onDisconnect: () => {
           stompClient.publish({
-            destination: "/pub/chat/leave",
+            destination: "/app/chat/leave",
             headers: { ACCESS_KEY: token },
             body: JSON.stringify({
               type: "LEAVE",
@@ -189,7 +189,7 @@ function ChatRoom() {
     input &&
       messageInfo.message.trim() &&
       stompClient.publish({
-        destination: "/pub/chat/send",
+        destination: "/app/chat/send",
         headers: { ACCESS_KEY: token },
         body: JSON.stringify(messageInfo),
       });
