@@ -104,6 +104,7 @@ function ChatRoom() {
       console.log("data가 있어! : ", data)
       setChatRoomInfo(data);
       console.log("chatRoomInfo 설정중! : ", chatRoomInfo)
+
       if (chatRoomInfo != null) {
         // endpoint로 SockJS 객체, StompClient 객체 생성
         let Sock = new SockJS('http://localhost:8080/ws-chat');
@@ -114,6 +115,7 @@ function ChatRoom() {
         // connect(header,연결 성공시 콜백,에러발생시 콜백)
         stompClient.connect({},onConnected, onError);
       }
+
     }
 
   }, [data, chatRoomInfo]);
@@ -200,6 +202,7 @@ function ChatRoom() {
     input &&
       messageInfo.message.trim() &&
       stompClient.send("/app/chat/send", {},  JSON.stringify(messageInfo));
+
     setInput("");
   };
 
