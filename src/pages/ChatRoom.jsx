@@ -25,6 +25,7 @@ function ChatRoom() {
   useEffect(() => {
     console.log("setWhoIam 이 설정중! : ", whoIAm)
     setWhoIAm(chatRoomInfo.userId);
+    console.log("내가 누구냐면 :", chatRoomInfo.userId);
   }, [chatRoomInfo]);
 
   // 스크롤 부분(채팅방 입장시 가장 아래로, 채팅로그가 업데이트 될 때마다 가장 아래로)
@@ -44,7 +45,7 @@ function ChatRoom() {
   //방 정보 받아오기
   const { isLoading, isError, data } = useQuery(
     "receiveRoomInfo",
-    () => receiveChatRoomInfo({ token, roomId }),
+    () => receiveChatRoomInfo({token, roomId }),
     { refetchOnWindowFocus: false, refetchOnMount: false }
   );
 
@@ -115,7 +116,8 @@ function ChatRoom() {
 
           stompClient.publish({
             destination: "/pub/chat/enter",
-            headers: { ACCESS_KEY: token },
+            headers: { Authentication: token },
+            // headers : {Authentication :`Bearer ${token}`},
             body: JSON.stringify({
               type: "ENTER",
               sender: data.sender,
@@ -128,7 +130,7 @@ function ChatRoom() {
         onDisconnect: () => {
           stompClient.publish({
             destination: "/pub/chat/leave",
-            headers: { ACCESS_KEY: token },
+            headers: { Authentication: token },
             body: JSON.stringify({
               type: "LEAVE",
               sender: data.sender,
@@ -190,7 +192,7 @@ function ChatRoom() {
       messageInfo.message.trim() &&
       stompClient.publish({
         destination: "/pub/chat/send",
-        headers: { ACCESS_KEY: token },
+        headers: { Authentication: `Bearer ${token}`},//token },
         body: JSON.stringify(messageInfo),
       });
     setInput("");
@@ -207,7 +209,7 @@ function ChatRoom() {
     onSuccess: (response) => {
       stompClient.publish({
         destination: "/pub/chat/send",
-        headers: { ACCESS_KEY: token },
+        headers: { Authentication: token },
         body: JSON.stringify({
           type: "IMAGE",
           sender: chatRoomInfo.sender,
