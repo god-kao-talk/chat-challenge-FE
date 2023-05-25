@@ -26,9 +26,7 @@ function ChatRoom() {
   // 채팅방에 입장한 본인이 누구인지를 상태관리
   const [whoIAm, setWhoIAm] = useState(null);
   useEffect(() => {
-    console.log("setWhoIam 이 설정중! : ", whoIAm)
     setWhoIAm(chatRoomInfo.userId);
-    console.log("내가 누구냐면 :", chatRoomInfo.userId);
   }, [chatRoomInfo]);
 
   // 스크롤 부분(채팅방 입장시 가장 아래로, 채팅로그가 업데이트 될 때마다 가장 아래로)
@@ -52,53 +50,6 @@ function ChatRoom() {
     { refetchOnWindowFocus: false, refetchOnMount: false }
   );
 
-  // useEffect(() => {
-  //   let stompClient = null;
-  //   if (data) {
-  //     setChatRoomInfo(data);
-  //     // 소켓 연결
-  //     const stompClient = new Client({
-  //       webSocketFactory: () =>
-  //         new SockJS(`${process.env.REACT_APP_SERVER_URL}/ws-edit`),
-  //       // 접속했을 때
-  //       onConnect: (frame) => {
-  //         setStompClient(stompClient);
-  //         // 구독상태 만들기
-  //         stompClient.subscribe("/sub/chat/room" + roomId, function (message) {
-  //           setMessageList((prev) => [...prev, JSON.parse(message.body)]);
-  //         });
-
-  //         stompClient.publish({
-  //           destination: "/pub/chat/enter",
-  //           headers: { ACCESS_KEY: token },
-  //           body: JSON.stringify({
-  //             type: "ENTER",
-  //             sender: data.sender,
-  //             userId: data.userId,
-  //             roomId: data.roomId,
-  //             message: "",
-  //           }),
-  //         });
-  //       },
-  //       onDisconnect: () => {
-  //         stompClient.publish({
-  //           destination: "/pub/chat/leave",
-  //           headers: { ACCESS_KEY: token },
-  //           body: JSON.stringify({
-  //             type: "LEAVE",
-  //             sender: data.sender,
-  //             userId: data.userId,
-  //             roomId: data.roomId,
-  //             message: "",
-  //           }),
-  //         });
-  //         stompClient && stompClient.deactivate();
-  //       },
-  //     });
-  //     stompClient.activate();
-  //   }
-  // }, [data]);
-
   useEffect(() => {
     if (data) {
       console.log("data가 있어! : ", data)
@@ -115,23 +66,21 @@ function ChatRoom() {
         // connect(header,연결 성공시 콜백,에러발생시 콜백)
         stompClient.connect({},onConnected, onError);
       }
-
     }
-
   }, [data, chatRoomInfo]);
 
   const onConnected = () => {
-    console.log("소켓 연결 시도중!")
+    console.log("roomId에 해당하는 채팅방 구독하기")
     // setUserData({...userData,"connected": true});
     stompClient.subscribe('/topic/chat/room/' + roomId, function async (message) {
       setMessageList( (prev) => [...prev, JSON.parse(message.body)]);
     });
-    console.log("소켓 연결 시도중222!!!")
     // stompClient.subscribe('/user/'+userData.username+'/private', onPrivateMessage);
     userJoin();
   }
 
   const userJoin=()=>{
+    console.log("채팅방 입장 : ENTER")
     var chatMessage = {
       type: "ENTER",
       sender: data.sender,

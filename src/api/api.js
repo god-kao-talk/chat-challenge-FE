@@ -1,9 +1,7 @@
 import axios from "axios";
 
-// 채팅방 입장시 api, method : post, end-point : /enter
+// 채팅방 입장시 api
 const receiveChatRoomInfo = async ({ token, roomId }) => {
-  console.log("토큰의 값을 확인 : ", token)
-  console.log("roomId 값을 확인 : ", roomId)
   try {
     const response = await axios.get(
       `${process.env.REACT_APP_SERVER_URL}/chat/${roomId}`,
