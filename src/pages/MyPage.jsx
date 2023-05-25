@@ -4,6 +4,7 @@ import styled from "@emotion/styled";
 import { useMutation, useQueryClient } from "react-query";
 import { receiveMyPageInfo } from "../api/api";
 import { editMyPageInfo } from "../api/api";
+import Cookies from 'js-cookie';
 
 function MyPage() {
   const [userInfo, setUserInfo] = useState({});
@@ -12,10 +13,11 @@ function MyPage() {
 
   const queryClient = useQueryClient();
 
-  //토큰 로컬 스토리지에서 추출
-  const token = localStorage.getItem("ACCESS_KEY");
-  const { isLoading, isError, data } = useQuery("receiveMyPageInfo", () =>
-    receiveMyPageInfo({ token })
+  const token = Cookies.get('Authorization');
+
+  const { isLoading, isError, data } = useQuery(
+    "receiveMyPageInfo", 
+    () => receiveMyPageInfo({ token })
   );
 
   useEffect(() => {
@@ -69,16 +71,16 @@ function MyPage() {
     <div>
       {userInfo && (
         <MyPageWrapper>
-          <h1>{data.username}님의 My Page</h1>
+          <h1>내 정보</h1>
           <MyPageForm>
             <div id='profile-image-wrapper'>
-              <img src={userInfo?.profile_image}></img>
+              <img src={data.imageUrl}></img>
             </div>
             <div id='many-input'></div>
             <div onClick={() => nameModal()} className='input'>
-              이름 : {userInfo.username}
+              이름 : {data.nickname}
             </div>
-            <div onClick={() => passwordModal()} className='input'>
+            {/* <div onClick={() => passwordModal()} className='input'>
               Password : ****
             </div>
             <div onClick={() => birthdayModal()} className='input'>
@@ -86,7 +88,7 @@ function MyPage() {
             </div>
             <div onClick={() => commentModal()} className='input'>
               상태메시지 : {userInfo.comment}
-            </div>
+            </div> */}
             <button onClick={onSubmitHandler} id='submit-button'>
               수정하기!
             </button>
