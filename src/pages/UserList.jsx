@@ -48,34 +48,48 @@ function UserList() {
   };
 
   useEffect(() => {
-    // getMyProfile();
-    // getUsersList();
+    getMyProfile();
+    getUsersList();
     getChatRoomList();
-    // happyBirthday();
   }, []);
 
   //내 정보 조회
-  // const getMyProfile = async () => {
-  //   const response = await axios.get("/users/mypage");
-  //   setMyProfile(response.data);
-  // };
-
-  // 생일 미리 보기
-  // const happyBirthday = async () => {
-  //   const response = await axios.get("/users/mypage/birthday");
-  //   setBirthday(response.data);
-  // };
+  const getMyProfile = async () => {
+    console.log("내정보 조회")
+    try {
+      const response = await axios.get(
+        "/users/myinfo",
+        {
+          headers: {
+            Authorization: `Bearer ${Authorization}`,
+          },
+        }
+      );
+      setMyProfile(response.data);
+      console.log("내 정보!! : ", response.data)
+    } catch (error) {
+      console.error("실패시 에러:", error);
+    }
+  };
 
   // 유저목록 조회
-  // const getUsersList = async () => {
-  //   try {
-  //     const response = await axios.get("/users/user-info");
-  //     setUserList(response.data);
-  //     // console.log(response.data)
-  //   } catch (error) {
-  //     console.error("실패시 에러:", error);
-  //   }
-  // };
+  const getUsersList = async () => {
+    console.log("유저리스트 조회")
+    try {
+      const response = await axios.get(
+        "/users",
+        {
+          headers: {
+            Authorization: `Bearer ${Authorization}`,
+          },
+        }
+      );
+      setUserList(response.data);
+      console.log("유저 리스트 정보!! : ", response.data)
+    } catch (error) {
+      console.error("실패시 에러:", error);
+    }
+  };
 
   // 체팅방리스트 조회
   const getChatRoomList = async () => {
@@ -120,13 +134,11 @@ function UserList() {
   const userDetail = (userId) => {
     getUserDetailModal(userId);
     setShowModal(true);
-    // console.log('userId : ', userId)
   };
 
   const getUserDetailModal = async (userId) => {
     const response = await axios.get(`/users/user-info/${userId}`);
     setDetailProfile(response.data);
-    // console.log('getUserDetailModal : ', detailProfile)
   };
 
   //채팅방 입장시도
@@ -144,37 +156,21 @@ function UserList() {
         >
           {myProfile && (
             <>
-              <UserImage src={myProfile.profile_image} alt='프로필 사진' />
-              <Name>{myProfile.username}</Name>
+              <UserImage src={myProfile.imageUrl} alt='프로필 사진' />
+              <Name>{myProfile.nickname}</Name>
             </>
           )}
         </UserInfoContainer>
-
-        <BirthdayContainer>
-          <div>
-            <h4>
-              생일인
-              <br /> 친구
-            </h4>
-          </div>
-          {birthday.map((HBD) => (
-            <div key={HBD.userid}>
-              <BirthdayImage src={HBD.profile_image} alt='프로필 사진' />
-              <div>{HBD.username}</div>
-            </div>
-          ))}
-        </BirthdayContainer>
 
         <ShowListContainer>
           <ShowContainerSecthon>
             {userList.map((user) => (
               <ShowUserList
-                key={user.userid}
+                key={user.nickname}
                 onClick={() => userDetail(user.userid)}
               >
-                <UserImage src={user.profile_image} alt='프로필 사진' />
-                <Name>{user.username}</Name>
-                <Comment>{user.comment}</Comment>
+                <UserImage src={user.imageUrl} alt='프로필 사진' />
+                <Name>{user.nickname}</Name>
               </ShowUserList>
             ))}
           </ShowContainerSecthon>
