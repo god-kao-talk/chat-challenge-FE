@@ -131,19 +131,33 @@ function UserList() {
     }
   };
 
+  //유저 정보 조회
   const userDetail = (userId) => {
     getUserDetailModal(userId);
     setShowModal(true);
   };
 
   const getUserDetailModal = async (userId) => {
-    const response = await axios.get(`/users/user-info/${userId}`);
-    setDetailProfile(response.data);
+    console.log("유저 정보 조회", Authorization)
+    try {
+      const response = await axios.get(
+        `/users/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${Authorization}`,
+          },
+        }
+      );
+      console.log(response.data);
+      setDetailProfile(response.data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   //채팅방 입장시도
-  const entryChatRoom = async (roomId) => {
-    console.log("채팅방 입장하기")
+  const entryChatRoom = (roomId) => {
+    console.log("채팅방 입장하기", roomId)
     navigate(`/ChatRoom/${roomId}`);
   };
 
@@ -167,7 +181,7 @@ function UserList() {
             {userList.map((user) => (
               <ShowUserList
                 key={user.nickname}
-                onClick={() => userDetail(user.userid)}
+                onClick={() => userDetail(user.id)}
               >
                 <UserImage src={user.imageUrl} alt='프로필 사진' />
                 <Name>{user.nickname}</Name>
@@ -250,11 +264,10 @@ function UserList() {
           >
             <UserProfileModal>
               <UserProfileImage
-                src={detailProfile.profile_image}
+                src={detailProfile.imageUrl}
                 alt='프로필 사진'
               />
-              <UserProfileName>{detailProfile.username}</UserProfileName>
-              <UserProfileComment>{detailProfile.comment}</UserProfileComment>
+              <UserProfileName>{detailProfile.nickname}</UserProfileName>
             </UserProfileModal>
           </ReactModal>
         </ShowListContainer>
@@ -421,7 +434,7 @@ const UserInfoContainer = styled.div`
   cursor: pointer;
   background-color: #ffffff;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
-
+  margin-bottom: 10px;
   &:hover {
     background-color: lightgray;
   }
