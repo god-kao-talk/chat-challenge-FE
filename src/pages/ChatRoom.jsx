@@ -43,7 +43,7 @@ function ChatRoom() {
   const params = useParams();
   const roomId = params.id;
 
-  //방 정보 받아오기
+  //방 정보 받아오기 : react-query를 이용해 받아오는 것
   const { isLoading, isError, data } = useQuery(
     "receiveRoomInfo",
     () => receiveChatRoomInfo({token, roomId }),
@@ -162,30 +162,30 @@ function ChatRoom() {
     setUploadImage(formData);
   };
 
-  const submitPictureApi = useMutation(submitPicture, {
-    onSuccess: (response) => {
-      stompClient.publish({
-        destination: "/pub/chat/send",
-        headers: { Authentication: token },
-        body: JSON.stringify({
-          type: "IMAGE",
-          sender: chatRoomInfo.sender,
-          userId: chatRoomInfo.userId,
-          roomId: chatRoomInfo.roomId,
-          image: response,
-        }),
-      });
-    },
-    onError: () => {
-      alert("사진 전송에 실패했습니다.");
-    },
-  });
+  // const submitPictureApi = useMutation(submitPicture, {
+  //   onSuccess: (response) => {
+  //     stompClient.publish({
+  //       destination: "/pub/chat/send",
+  //       headers: { Authentication: token },
+  //       body: JSON.stringify({
+  //         type: "IMAGE",
+  //         sender: chatRoomInfo.sender,
+  //         userId: chatRoomInfo.userId,
+  //         roomId: chatRoomInfo.roomId,
+  //         image: response,
+  //       }),
+  //     });
+  //   },
+  //   onError: () => {
+  //     alert("사진 전송에 실패했습니다.");
+  //   },
+  // });
 
-  const uploadImageHandler = () => {
-    console.log(uploadImage);
-    uploadImage !== null &&
-      submitPictureApi.mutate({ token, file: uploadImage });
-  };
+  // const uploadImageHandler = () => {
+  //   console.log(uploadImage);
+  //   uploadImage !== null &&
+  //     submitPictureApi.mutate({ token, file: uploadImage });
+  // };
 
   if (isLoading) {
     return <p>로딩중입니다!</p>;
@@ -236,9 +236,9 @@ function ChatRoom() {
                 onChange={prepareUploadImage}
               />
             </label>
-            <button onClick={uploadImageHandler} className='picture-submit'>
+            {/* <button onClick={uploadImageHandler} className='picture-submit'>
               사진전송
-            </button>
+            </button> */}
             <button onClick={sendMsg} className='message-submit'>
               전송
             </button>

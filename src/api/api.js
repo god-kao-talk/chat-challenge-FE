@@ -11,7 +11,7 @@ const receiveChatRoomInfo = async ({ token, roomId }) => {
         }
       }
     );
-    console.log("채팅방 입장 후 데이터에 대한 출력 : ", response)
+    console.log("채팅방 조회 후 데이터에 대한 출력 : ", response)
     return response.data;
   } catch (error) {
     console.log(error);
@@ -20,29 +20,34 @@ const receiveChatRoomInfo = async ({ token, roomId }) => {
 };
 
 // 채팅방 사진 전송 api, method : post, end-point : chat/image
-const submitPicture = async ({ token, file }) => {
-  console.log(file);
-  try {
-    const response = await axios.post(
-      `${process.env.REACT_APP_SERVER_URL}/chat/image`,
-      file,
-      { headers: { ACCESS_KEY: `${token}` } }
-    );
-    console.log(response.data);
-    return response.data;
-  } catch (error) {
-    console.log(error);
-    return Promise.reject(error.response.data.message);
-  }
-};
+// const submitPicture = async ({ token, file }) => {
+//   console.log(file);
+//   try {
+//     const response = await axios.post(
+//       `${process.env.REACT_APP_SERVER_URL}/chat/image`,
+//       file,
+//       { headers: { ACCESS_KEY: `${token}` } }
+//     );
+//     console.log(response.data);
+//     return response.data;
+//   } catch (error) {
+//     console.log(error);
+//     return Promise.reject(error.response.data.message);
+//   }
+// };
 
-// 마이페이지 get api, method : get, end-point : /users/mypage
+// 마이페이지 get api
 const receiveMyPageInfo = async ({ token }) => {
   try {
     const response = await axios.get(
-      `${process.env.REACT_APP_SERVER_URL}/users/mypage`,
-      { headers: { Authorization: `Bearer ${token}` } }
+      `${process.env.REACT_APP_SERVER_URL}/users/myinfo`,
+      { 
+        headers: { 
+          Authorization: `Bearer ${token}` 
+        } 
+      }
     );
+    console.log("내 정보 조회 후 데이터에 대한 출력 : ", response)
     return response.data;
   } catch (error) {
     console.log(error);
@@ -68,7 +73,7 @@ const editMyPageInfo = async ({ token, userInfo }) => {
 
 export {
   receiveChatRoomInfo,
-  submitPicture,
+  // submitPicture,
   receiveMyPageInfo,
   editMyPageInfo,
 };
