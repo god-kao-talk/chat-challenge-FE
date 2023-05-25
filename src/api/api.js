@@ -2,6 +2,7 @@ import axios from "axios";
 
 // 채팅방 입장시 api
 const receiveChatRoomInfo = async ({ token, roomId }) => {
+  console.log("동작확인!!!!!!!!!!!!!!!!!!!!!!!")
   try {
     const response = await axios.get(
       `${process.env.REACT_APP_SERVER_URL}/chat/${roomId}`,

@@ -43,11 +43,11 @@ function ChatRoom() {
   const params = useParams();
   const roomId = params.id;
 
-  //방 정보 받아오기 : react-query를 이용해 받아오는 것
+  //useQuery는 캐싱 기능이 있음. 캐시 키 값에 대해 반복적인 호출을 유발할 수 있음
   const { isLoading, isError, data } = useQuery(
-    "receiveRoomInfo",
+    `receiveRoomInfo/${roomId}`,
     () => receiveChatRoomInfo({token, roomId }),
-    { refetchOnWindowFocus: false, refetchOnMount: false }
+    { refetchOnWindowFocus: false }
   );
 
   useEffect(() => {
@@ -227,7 +227,7 @@ function ChatRoom() {
             onChange={(e) => setInput(e.target.value)}
           ></textarea>
           <div className='button-pair'>
-            <label htmlFor='fileInput' className='picture-choice-label'>
+            {/* <label htmlFor='fileInput' className='picture-choice-label'>
               사진선택
               <input
                 type='file'
@@ -235,7 +235,7 @@ function ChatRoom() {
                 className='picture-choice'
                 onChange={prepareUploadImage}
               />
-            </label>
+            </label> */}
             {/* <button onClick={uploadImageHandler} className='picture-submit'>
               사진전송
             </button> */}
@@ -432,8 +432,11 @@ const EscapeText = styled.div`
 `;
 
 const ChatRoomWrapper = styled.div`
-  height: 860px;
-  width: 1000px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: auto;
+  justify-content: auto;
 `;
 
 const ChatLog = styled.div`
