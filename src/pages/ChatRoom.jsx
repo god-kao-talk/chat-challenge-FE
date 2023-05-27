@@ -54,6 +54,7 @@ function ChatRoom() {
     if (data) {
       console.log("data가 있어! : ", data)
       setChatRoomInfo(data);
+      setMessageList(data.chatList);
       console.log("chatRoomInfo 설정중! : ", chatRoomInfo)
 
       if (Object.keys(chatRoomInfo).length !== 0) {
@@ -72,10 +73,13 @@ function ChatRoom() {
   const onConnected = () => {
     console.log("roomId에 해당하는 채팅방 구독하기")
     // setUserData({...userData,"connected": true});
+
+    //subscribe(subscribe url,해당 url로 메시지를 받을때마다 실행할 함수)
     stompClient.subscribe('/topic/chat/room/' + roomId, function async (message) {
       setMessageList( (prev) => [...prev, JSON.parse(message.body)]);
     });
-    // stompClient.subscribe('/user/'+userData.username+'/private', onPrivateMessage);
+
+    // stompClient.subscribe('/user/'+userData.username+'/private', onPrivateMessage); 
     userJoin();
   }
 
@@ -83,62 +87,17 @@ function ChatRoom() {
     console.log("채팅방 입장 : ENTER")
     var chatMessage = {
       type: "ENTER",
-      sender: data.sender,
-      userId: data.userId,
-      roomId: data.roomId,
+      sender: chatRoomInfo.sender,
+      userId: chatRoomInfo.userId,
+      roomId: chatRoomInfo.roomId,
       message: ""
     };
     stompClient.send("/app/chat/enter", {}, JSON.stringify(chatMessage));
   }
 
-  // const onMessageReceived = (payload)=>{
-  //   var payloadData = JSON.parse(payload.body);
-  //   switch(payloadData.status){
-  //       case "ENTER":
-  //           if(!privateChats.get(payloadData.senderName)){
-  //               privateChats.set(payloadData.senderName,[]);
-  //               setPrivateChats(new Map(privateChats));
-  //           }
-  //           break;
-  //       case "TALK":
-  //           publicChats.push(payloadData);
-  //           setPublicChats([...publicChats]);
-  //           break;
-  //   }
-  // }
-
   const onError = (err) => {
     console.log(err);
   }
-
-  // useEffect(() => {
-  //   const handleBeforeUnload = (event) => {
-  //     // 원하는 로직을 실행
-  //     stompClient.publish({
-  //       destination: "/pub/chat/leave",
-  //       headers: { ACCESS_KEY: token },
-  //       body: JSON.stringify({
-  //         type: "LEAVE",
-  //         sender: data.sender,
-  //         userId: data.userId,
-  //         roomId: data.roomId,
-  //         message: "",
-  //       }),
-  //     });
-
-  //     // 이벤트 메시지를 설정하여 사용자에게 경고 메시지를 표시할 수도 있습니다.
-  //     event.preventDefault();
-  //     event.returnValue = ""; // Chrome에서는 이 값을 설정해야 경고 메시지가 표시됩니다.
-  //   };
-
-  //   // beforeunload 이벤트 리스너 등록
-  //   window.addEventListener("beforeunload", handleBeforeUnload);
-
-  //   return () => {
-  //     // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
-  //     window.removeEventListener("beforeunload", handleBeforeUnload);
-  //   };
-  // }, [stompClient]);
 
   const sendMsg = () => {
     const messageInfo = {
