@@ -4,6 +4,7 @@ import Signup from "../pages/Signup";
 import ChatRoom from "../pages/ChatRoom";
 import UserList from "../pages/UserList";
 import MyPage from "../pages/MyPage";
+import Main from "../pages/Main";
 
 const Router = () => {
   return (
@@ -15,6 +16,7 @@ const Router = () => {
           <Route path='/ChatRoom/:id' element={<ChatRoom />} />
           {<Route path='/userslist' element={<UserList />} />}
           <Route path='/MyPage/:id' element={<MyPage />} />
+          <Route path='/Main' element={<Main />} />
         </Routes>
       </BrowserRouter>
     </>
