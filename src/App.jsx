@@ -1,12 +1,14 @@
-import logo from "./logo.svg";
 import "./App.css";
-import Router from "./shared/Router";
 import { QueryClient, QueryClientProvider } from "react-query";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import Cookies from "js-cookie";
 import jwt_decode from "jwt-decode";
 import queryString from "query-string";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Login from "./pages/Login";
+import Main from "./pages/Main";
+import Layout from "./components/Layout";
 
 const queryClient = new QueryClient();
 
@@ -46,7 +48,15 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Router />
+      <BrowserRouter>
+        <Layout>
+        <Routes>
+          <Route path='/' element={<Login />} />
+          {/* <Route path='/signup' element={<Signup />} /> */}
+          <Route path='/Main' element={<Main />} />
+        </Routes>
+        </Layout>
+      </BrowserRouter>
     </QueryClientProvider>
   );
 }
