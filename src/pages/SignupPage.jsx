@@ -1,24 +1,64 @@
 import styled from '@emotion/styled';
 import * as S from '../style/_auth';
+import { useNavigate } from 'react-router-dom';
+import { signup } from '../api/auth';
+import useInput from '../hooks/useInput';
 
 const SignupPage = () => {
+  const navigate = useNavigate();
+
+  const { inputData: email, inputChangeHandler: emailChangeHandler } = useInput();
+  const { inputData: nickname, inputChangeHandler: nicknameChangeHandler } = useInput();
+  const { inputData: password, inputChangeHandler: passwordChangeHandler } = useInput();
+
+  const inputList = [
+    {
+      value: 'email',
+      label: '이메일',
+      type: 'email',
+      inputValue: email,
+      onChange: emailChangeHandler,
+    },
+    {
+      value: 'nickname',
+      label: '사용자명',
+      type: 'text',
+      inputValue: nickname,
+      onChange: nicknameChangeHandler,
+    },
+    {
+      value: 'password',
+      label: '비밀번호',
+      type: 'password',
+      inputValue: password,
+      onChange: passwordChangeHandler,
+    },
+  ];
+
+  const inputDataSubmitHandler = async (event) => {
+    event.preventDefault();
+    const response = await signup({ email, nickname, password });
+    response && navigate('/login');
+  };
+
   return (
     <S.AuthPageContainer>
       <S.AuthContainer>
         <StTitle>계정 만들기</StTitle>
-        <StForm>
+        <StForm onSubmit={inputDataSubmitHandler}>
           <StInputContainer>
             <StInputWrapper>
-              <StLabel htmlFor='email'>이메일</StLabel>
-              <StInput type='email' id='email' />
-            </StInputWrapper>
-            <StInputWrapper>
-              <StLabel htmlFor='nickname'>사용자명</StLabel>
-              <StInput id='nickname' />
-            </StInputWrapper>
-            <StInputWrapper>
-              <StLabel htmlFor='password'>비밀번호</StLabel>
-              <StInput type='password' id='password' />
+              {inputList.map((inputItem, index) => (
+                <div key={index}>
+                  <StLabel htmlFor={inputItem.value}>{inputItem.label}</StLabel>
+                  <StInput
+                    type={inputItem.type}
+                    id={inputItem.value}
+                    value={inputItem.inputValue}
+                    onChange={inputItem.onChange}
+                  />
+                </div>
+              ))}
             </StInputWrapper>
           </StInputContainer>
           <StButton>계속하기</StButton>
@@ -61,8 +101,8 @@ const StInput = styled.input`
   border: none;
   border-radius: 5px;
   color: white;
-  font-size: 20px;
-  padding: 5px 7px;
+  font-size: 18px;
+  padding: 10px 8px;
 `;
 
 const StButton = styled.button`
