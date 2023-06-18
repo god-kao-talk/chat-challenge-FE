@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import * as S from '../style/_auth';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { signup } from '../api/auth';
 import useInput from '../hooks/useInput';
 
@@ -47,21 +47,24 @@ const SignupPage = () => {
         <StTitle>계정 만들기</StTitle>
         <StForm onSubmit={inputDataSubmitHandler}>
           <StInputContainer>
-            <StInputWrapper>
-              {inputList.map((inputItem, index) => (
-                <div key={index}>
-                  <StLabel htmlFor={inputItem.value}>{inputItem.label}</StLabel>
-                  <StInput
-                    type={inputItem.type}
-                    id={inputItem.value}
-                    value={inputItem.inputValue}
-                    onChange={inputItem.onChange}
-                  />
-                </div>
-              ))}
-            </StInputWrapper>
+            {inputList.map((inputItem, index) => (
+              <StInputWrapper key={index}>
+                <StLabel htmlFor={inputItem.value}>{inputItem.label}</StLabel>
+                <StInput
+                  type={inputItem.type}
+                  id={inputItem.value}
+                  value={inputItem.inputValue}
+                  onChange={inputItem.onChange}
+                />
+              </StInputWrapper>
+            ))}
           </StInputContainer>
-          <StButton>계속하기</StButton>
+          <StButtonContainer>
+            <StButton>계속하기</StButton>
+            <Link to='/login'>
+              <StToLoginPageLabel>이미 계정이 있으신가요?</StToLoginPageLabel>
+            </Link>
+          </StButtonContainer>
         </StForm>
       </S.AuthContainer>
     </S.AuthPageContainer>
@@ -105,6 +108,8 @@ const StInput = styled.input`
   padding: 10px 8px;
 `;
 
+const StButtonContainer = styled.div``;
+
 const StButton = styled.button`
   width: 100%;
   background-color: #5869ea;
@@ -112,6 +117,12 @@ const StButton = styled.button`
   font-size: 17px;
   font-weight: bold;
   padding: 7px;
+`;
+
+const StToLoginPageLabel = styled.div`
+  color: #4095d9;
+  cursor: pointer;
+  margin-top: 10px;
 `;
 
 export default SignupPage;
