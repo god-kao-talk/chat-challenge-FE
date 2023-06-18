@@ -6,6 +6,7 @@ import UserList from '../pages/UserList';
 import MyPage from '../pages/MyPage';
 import Main from '../pages/Main';
 import SignupPage from '../pages/SignupPage';
+import LoginPage from '../pages/LoginPage';
 
 const Router = () => {
   return (
@@ -13,6 +14,7 @@ const Router = () => {
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<Login />} />
+          <Route path='/login' element={<LoginPage />} />
           {/* <Route path='/signup' element={<Signup />} /> */}
           <Route path='/signup' element={<SignupPage />} />
           {/* <Route path='/ChatRoom/:id' element={<ChatRoom />} />

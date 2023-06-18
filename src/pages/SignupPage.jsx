@@ -43,81 +43,35 @@ const SignupPage = () => {
 
   return (
     <S.AuthPageContainer>
-      <S.AuthContainer>
+      <S.AuthContainer width='450px' height='500px' padding='30px'>
         <StTitle>계정 만들기</StTitle>
-        <StForm onSubmit={inputDataSubmitHandler}>
-          <StInputContainer>
+        <S.AuthForm onSubmit={inputDataSubmitHandler} justifycontent='space-around'>
+          <S.AuthInputContainer>
             {inputList.map((inputItem, index) => (
-              <StInputWrapper key={index}>
-                <StLabel htmlFor={inputItem.value}>{inputItem.label}</StLabel>
-                <StInput
+              <S.AuthInputWrapper key={index}>
+                <S.AuthLabel htmlFor={inputItem.value}>{inputItem.label}</S.AuthLabel>
+                <S.AuthInput
                   type={inputItem.type}
                   id={inputItem.value}
-                  value={inputItem.inputValue}
+                  value={inputItem.inputValue || ''}
                   onChange={inputItem.onChange}
                 />
-              </StInputWrapper>
+              </S.AuthInputWrapper>
             ))}
-          </StInputContainer>
-          <StButtonContainer>
-            <StButton>계속하기</StButton>
+          </S.AuthInputContainer>
+          <S.AuthButtonContainer>
+            <S.AuthButton>계속하기</S.AuthButton>
             <Link to='/login'>
               <StToLoginPageLabel>이미 계정이 있으신가요?</StToLoginPageLabel>
             </Link>
-          </StButtonContainer>
-        </StForm>
+          </S.AuthButtonContainer>
+        </S.AuthForm>
       </S.AuthContainer>
     </S.AuthPageContainer>
   );
 };
 
 const StTitle = styled.h1``;
-
-const StForm = styled.form`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-`;
-
-const StInputContainer = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-`;
-
-const StInputWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-`;
-
-const StLabel = styled.label``;
-
-const StInput = styled.input`
-  box-sizing: border-box;
-  width: 100%;
-  background-color: #1e1f22;
-  outline: none;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  font-size: 18px;
-  padding: 10px 8px;
-`;
-
-const StButtonContainer = styled.div``;
-
-const StButton = styled.button`
-  width: 100%;
-  background-color: #5869ea;
-  border-radius: 5px;
-  font-size: 17px;
-  font-weight: bold;
-  padding: 7px;
-`;
 
 const StToLoginPageLabel = styled.div`
   color: #4095d9;
