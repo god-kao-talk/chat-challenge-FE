@@ -3,7 +3,7 @@ import * as S from '../style/_auth';
 import useInput from '../hooks/useInput';
 import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../api/auth';
-import { BASE_URL } from '../shared/constants';
+import { BASE_URL, PATH_URL } from '../shared/constants';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -29,7 +29,7 @@ const LoginPage = () => {
   const inputDataSubmitHandler = async (event) => {
     event.preventDefault();
     const response = await login({ email, password });
-    response && navigate('/Main');
+    response && navigate(PATH_URL.MAIN);
   };
 
   const googleLoginHandler = async () => {

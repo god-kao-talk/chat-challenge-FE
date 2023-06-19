@@ -3,6 +3,7 @@ import * as S from '../style/_auth';
 import { Link, useNavigate } from 'react-router-dom';
 import { signup } from '../api/auth';
 import useInput from '../hooks/useInput';
+import { PATH_URL } from '../shared/constants';
 
 const SignupPage = () => {
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ const SignupPage = () => {
   const inputDataSubmitHandler = async (event) => {
     event.preventDefault();
     const response = await signup({ email, nickname, password });
-    response && navigate('/login');
+    response && navigate(PATH_URL.LOGIN);
   };
 
   return (

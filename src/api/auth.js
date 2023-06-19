@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { BASE_URL } from '../shared/constants';
+import { BASE_URL, TOKEN } from '../shared/constants';
 import Cookies from 'js-cookie';
 
 export const signup = async (inputData) => {
@@ -19,8 +19,8 @@ export const login = async (inputData) => {
     const accesstoken = response.headers.authorization;
     const refreshtoken = response.headers['authorization-refresh'];
 
-    Cookies.set('accesstoken', accesstoken);
-    Cookies.set('refreshtoken', refreshtoken);
+    Cookies.set(TOKEN.ACCESS_TOKEN, accesstoken);
+    Cookies.set(TOKEN.REFRESH_TOKEN, refreshtoken);
 
     return response;
   } catch (error) {
