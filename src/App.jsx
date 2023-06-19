@@ -9,6 +9,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "./pages/Login";
 import Main from "./pages/Main";
 import Layout from "./components/Layout";
+import Chat from "./pages/Chat";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +54,7 @@ function App() {
         <Routes>
           <Route path='/' element={<Login />} />
           {/* <Route path='/signup' element={<Signup />} /> */}
+          <Route path='/chat' element={<Chat />} />
           <Route path='/Main' element={<Main />} />
         </Routes>
         </Layout>

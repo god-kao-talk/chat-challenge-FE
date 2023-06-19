@@ -26,7 +26,7 @@ function Login() {
       }
 
       // 서버로 데이터 전송
-      const response = await axios.post(`${process.env.REACT_APP_SERVER_URL}/users/login`, loginData)
+      const response = await axios.post(`${process.env.REACT_APP_SERVER_URL}/login`, loginData)
       console.log('데이터 : ', response.data)
 
       const Access_key = response.headers.get('Access_key')
@@ -46,16 +46,12 @@ function Login() {
     setLoginForm({ ...loginForm, [name]: value })
   }
 
-
-
-
-
   return (
     <Container>
       <LoginForm>
         <Logo src={logo} alt="로고" />
         
-        {/* <TextFidelContainer>
+        <TextFidelContainer>
           <TextField
             id="userid"
             name="userid"
@@ -68,9 +64,9 @@ function Login() {
               width: '300px',
               backgroundColor: 'white'
             }}
-          /> */}
-        {/* </TextFidelContainer> */}
-        {/* <TextFidelContainer>
+          />
+        </TextFidelContainer>
+        <TextFidelContainer>
           <TextField
             id="password"
             name="password"
@@ -84,9 +80,9 @@ function Login() {
               backgroundColor: 'white'
             }}
           />
-        </TextFidelContainer> */}
+        </TextFidelContainer>
         <ButtonContainer>
-          {/* <Button
+        <Button
             variant="contained"
             onClick={handleLogin}
             sx={{
@@ -103,8 +99,8 @@ function Login() {
 
 
             로그인
-          </Button> */}
-          {/* <Button
+          </Button> 
+          <Button
             variant="contained"
             onClick={handleSignup}
             sx={{
@@ -119,13 +115,12 @@ function Login() {
             }}
           >
             회원가입
-          </Button> */}
+          </Button>
           <div class="login-box">
-            <h2></h2>
-            <a href="http://localhost:8080/oauth2/authorization/google" class="social-button" id="google-connect"> <span>Connect with Google</span></a>
-            <a href="#" class="social-button" id="facebook-connect"> <span>Connect with Facebook</span></a>
-      {/* <a href="#" class="social-button" id="google-connect"> <span>Connect with Google</span></a> */}
-      <a href="#" class="social-button" id="twitter-connect"> <span>Connect with Twitter</span></a>
+            <a href="http://ec2-3-34-21-84.ap-northeast-2.compute.amazonaws.com:8080/oauth2/authorization/google" class="social-button" id="google-connect"> <span>Connect with Google</span></a>
+            {/* <a href="#" class="social-button" id="facebook-connect"> <span>Connect with Facebook</span></a> */}
+            {/* <a href="#" class="social-button" id="google-connect"> <span>Connect with Google</span></a> */}
+            {/* <a href="#" class="social-button" id="twitter-connect"> <span>Connect with Twitter</span></a> */}
           </div>
         </ButtonContainer>
       </LoginForm>
