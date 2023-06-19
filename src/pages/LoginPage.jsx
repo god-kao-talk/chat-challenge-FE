@@ -3,19 +3,13 @@ import * as S from '../style/_auth';
 import useInput from '../hooks/useInput';
 import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../api/auth';
+import { BASE_URL } from '../shared/constants';
 
 const LoginPage = () => {
   const navigate = useNavigate();
 
   const { inputData: email, inputChangeHandler: emailChangeHandler } = useInput();
   const { inputData: password, inputChangeHandler: passwordChangeHandler } = useInput();
-
-  const inputDataSubmitHandler = async (event) => {
-    event.preventDefault();
-
-    const response = await login({ email, password });
-    response && navigate('/Main');
-  };
 
   const inputList = [
     {
@@ -31,6 +25,17 @@ const LoginPage = () => {
       onChange: passwordChangeHandler,
     },
   ];
+
+  const inputDataSubmitHandler = async (event) => {
+    event.preventDefault();
+    const response = await login({ email, password });
+    response && navigate('/Main');
+  };
+
+  const googleLoginHandler = async () => {
+    const GOOGLE_AUTH_URL = `${BASE_URL}/oauth2/authorization/google`;
+    window.location.href = GOOGLE_AUTH_URL;
+  };
 
   return (
     <S.AuthPageContainer>
@@ -54,7 +59,9 @@ const LoginPage = () => {
           <S.AuthButtonContainer>
             <StButtonWrapper>
               <S.AuthButton>로그인</S.AuthButton>
-              <S.AuthButton type='button'>소셜 로그인</S.AuthButton>
+              <S.AuthButton type='button' onClick={googleLoginHandler}>
+                소셜 로그인
+              </S.AuthButton>
             </StButtonWrapper>
             <StSwitchPageWrapper>
               <StSwitchPageDescriptionLabel>계정이 필요한가요? </StSwitchPageDescriptionLabel>

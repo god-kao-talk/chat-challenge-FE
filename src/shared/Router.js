@@ -7,6 +7,7 @@ import MyPage from '../pages/MyPage';
 import Main from '../pages/Main';
 import SignupPage from '../pages/SignupPage';
 import LoginPage from '../pages/LoginPage';
+import RedirectionGoogleLogin from '../components/RedirectionGoogleLogin';
 
 const Router = () => {
   return (
@@ -15,6 +16,7 @@ const Router = () => {
         <Routes>
           <Route path='/' element={<Login />} />
           <Route path='/login' element={<LoginPage />} />
+          <Route path='/userslist' element={<RedirectionGoogleLogin />} />
           {/* <Route path='/signup' element={<Signup />} /> */}
           <Route path='/signup' element={<SignupPage />} />
           {/* <Route path='/ChatRoom/:id' element={<ChatRoom />} />

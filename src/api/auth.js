@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { BASE_URL } from '../shared/constants';
-
-const JWT_EXPIRY_TIME = 24 * 3600 * 1000;
+import Cookies from 'js-cookie';
 
 export const signup = async (inputData) => {
   try {
@@ -17,22 +16,15 @@ export const login = async (inputData) => {
   try {
     const response = await axios.post(`${BASE_URL}/login`, inputData);
 
-    onLoginSuccess(response);
+    const accesstoken = response.headers.authorization;
+    const refreshtoken = response.headers['authorization-refresh'];
+
+    Cookies.set('accesstoken', accesstoken);
+    Cookies.set('refreshtoken', refreshtoken);
 
     return response;
   } catch (error) {
     console.error('Login Axios Error', error);
     alert(error.response.data);
   }
-};
-
-// TODO: refresh token secure httpOnly 쿠키로 받아올 경우 작성
-// const onSilentRefresh = (data) => {
-// }
-
-const onLoginSuccess = (response) => {
-  const { authorization } = response.headers;
-  axios.defaults.headers.common['Authorization'] = authorization;
-
-  // setTimeout(onSilentRefresh, JWT_EXPIRY_TIME - 60000);
 };
