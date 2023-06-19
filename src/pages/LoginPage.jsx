@@ -1,15 +1,20 @@
 import { styled } from 'styled-components';
 import * as S from '../style/_auth';
 import useInput from '../hooks/useInput';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { login } from '../api/auth';
 
 const LoginPage = () => {
+  const navigate = useNavigate();
+
   const { inputData: email, inputChangeHandler: emailChangeHandler } = useInput();
   const { inputData: password, inputChangeHandler: passwordChangeHandler } = useInput();
 
-  const inputDataSubmitHandler = (event) => {
+  const inputDataSubmitHandler = async (event) => {
     event.preventDefault();
-    console.log({ email, password });
+
+    const response = await login({ email, password });
+    response && navigate('/Main');
   };
 
   const inputList = [
