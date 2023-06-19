@@ -62,7 +62,7 @@ const SignupPage = () => {
           </S.AuthInputContainer>
           <S.AuthButtonContainer>
             <S.AuthButton>계속하기</S.AuthButton>
-            <Link to='/login'>
+            <Link to={PATH_URL.LOGIN}>
               <StToLoginPageLabel>이미 계정이 있으신가요?</StToLoginPageLabel>
             </Link>
           </S.AuthButtonContainer>
