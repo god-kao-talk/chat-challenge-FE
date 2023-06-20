@@ -39,7 +39,10 @@ const SignupPage = () => {
   const inputDataSubmitHandler = async (event) => {
     event.preventDefault();
     const response = await signup({ email, nickname, password });
-    response && navigate(PATH_URL.LOGIN);
+    if (response) {
+      alert('회원가입 완료');
+      navigate(PATH_URL.LOGIN);
+    }
   };
 
   return (
