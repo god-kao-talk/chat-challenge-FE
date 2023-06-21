@@ -8,24 +8,38 @@ import Layout from './components/Layout';
 import LoginPage from './pages/LoginPage';
 import RedirectGoogleLogin from './components/RedirectionGoogleLogin';
 import SignupPage from './pages/SignupPage';
+import Chat from './pages/Chat';
 
 const queryClient = new QueryClient();
 
 function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path={PATH_URL.LOGIN} element={<LoginPage />} />
-            <Route path={PATH_URL.REDIRECT_GOOGLE_LOGIN} element={<RedirectGoogleLogin />} />
-            <Route path={PATH_URL.SIGNUP} element={<SignupPage />} />
-            <Route path={PATH_URL.MAIN} element={<Main />} />
-          </Routes>
-        </Layout>
-      </BrowserRouter>
-    </QueryClientProvider>
-  );
+    return (
+        <QueryClientProvider client={queryClient}>
+            <BrowserRouter>
+                <Routes>
+                    <Route path={PATH_URL.LOGIN} element={<LoginPage />} />
+                    <Route path={PATH_URL.REDIRECT_GOOGLE_LOGIN} element={<RedirectGoogleLogin />} />
+                    <Route path={PATH_URL.SIGNUP} element={<SignupPage />} />
+                    <Route
+                        path={PATH_URL.MAIN}
+                        element={
+                            <Layout>
+                                <Main />
+                            </Layout>
+                        }
+                    />
+                    <Route
+                        path={PATH_URL.CHAT}
+                        element={
+                            <Layout>
+                                <Chat />
+                            </Layout>
+                        }
+                    />
+                </Routes>
+            </BrowserRouter>
+        </QueryClientProvider>
+    );
 }
 
 export default App;
