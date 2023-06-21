@@ -12,6 +12,7 @@ const RedirectionGoogleLogin = () => {
   const googleLogin = () => {
     Cookies.set(TOKEN.ACCESS_TOKEN, accesstoken);
     navigate('/Main');
+    alert('로그인이 완료되었습니다.');
   };
 
   useEffect(() => {

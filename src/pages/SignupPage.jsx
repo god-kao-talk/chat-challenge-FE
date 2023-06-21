@@ -40,7 +40,7 @@ const SignupPage = () => {
     event.preventDefault();
     const response = await signup({ email, nickname, password });
     if (response) {
-      alert('회원가입 완료');
+      alert('회원가입이 완료되었습니다.');
       navigate(PATH_URL.LOGIN);
     }
   };

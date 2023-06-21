@@ -30,7 +30,7 @@ const LoginPage = () => {
     event.preventDefault();
     const response = await login({ email, password });
     if (response) {
-      alert('로그인 완료');
+      alert('로그인이 완료되었습니다.');
       navigate(PATH_URL.MAIN);
     }
   };
