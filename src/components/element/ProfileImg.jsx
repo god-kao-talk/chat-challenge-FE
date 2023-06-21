@@ -1,15 +1,19 @@
-import React from "react";
-import { styled } from "styled-components";
-import user01 from "../../img/userImg_01.png";
+import React from 'react';
+import { styled } from 'styled-components';
+import user01 from '../../img/userImg_01.png';
 
-// 추후에 이미지와 online 상태 props 받아서 처리 추가
-const ProfileImg = () => {
+// TODO: online 상태 props 받아서 처리 추가
+const ProfileImg = ({ imgUrl }) => {
   return (
-    <StImg className="profileImg">
+    <StImg className='profileImg'>
       <div>
-        <img src={user01} alt="내 프로필 이미지" />
+        {imgUrl === null || imgUrl === undefined ? (
+          <img src={user01} alt='default profile' />
+        ) : (
+          <img src={imgUrl} alt='profile' />
+        )}
       </div>
-      <span className="onlineAlert">&nbsp;</span>
+      <span className='onlineAlert'>&nbsp;</span>
     </StImg>
   );
 };
