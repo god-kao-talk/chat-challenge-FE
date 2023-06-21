@@ -4,9 +4,13 @@ import StProfile from '../style/_profile';
 import ProfileImg from './element/ProfileImg';
 import { getFriendList } from '../api/friend';
 import FriendListItem from './element/FriendListItem';
+import useDecodeJWT from '../hooks/useDecodeJWT';
 
 const Profile = () => {
   const [friendList, setFriendList] = useState([]);
+
+  const decodedToken = useDecodeJWT();
+  const userEmail = decodedToken.email;
 
   const fetchFriendList = async () => {
     const friendListServerData = await getFriendList();
