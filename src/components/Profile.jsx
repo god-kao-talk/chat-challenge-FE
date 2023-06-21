@@ -10,6 +10,7 @@ const Profile = () => {
   const [friendList, setFriendList] = useState([]);
 
   const decodedToken = useDecodeJWT();
+  const userNickname = decodedToken.nickname;
   const userEmail = decodedToken.email;
 
   const fetchFriendList = async () => {
@@ -19,15 +20,15 @@ const Profile = () => {
 
   useState(() => {
     fetchFriendList();
-  }, []);
+  }, [friendList]);
 
   return (
     <StProfile>
       <div className='profile'>
         <ProfileImg />
         <p>
-          사용자 이름
-          <span>사용자 소개</span>
+          {userNickname}
+          <span>{userEmail}</span>
         </p>
       </div>
       <section className='friendsList'>
