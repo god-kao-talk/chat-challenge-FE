@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 const StFriends = styled.article`
-    width: calc(100% - 312px);
+    width: calc(100% - 240px);
     height: 100vh;
     overflow-x: hidden;
     overflow-y: auto;

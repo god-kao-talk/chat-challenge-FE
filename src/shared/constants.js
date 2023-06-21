@@ -5,6 +5,7 @@ export const PATH_URL = {
   REDIRECT_GOOGLE_LOGIN: '/userslist',
   SIGNUP: '/signup',
   MAIN: '/main',
+  CHAT: '/chat',
 };
 
 export const TOKEN = {
