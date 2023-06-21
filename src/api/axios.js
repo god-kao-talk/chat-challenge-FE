@@ -1,5 +1,5 @@
-import axios from "axios";
-import Cookies from "js-cookie";
+import axios from 'axios';
+import { getAccessToken } from './getToken';
 
 const instance = axios.create({
   baseURL: process.env.REACT_APP_SERVER_URL,
@@ -9,11 +9,10 @@ const instance = axios.create({
   },
 });
 
-
 instance.interceptors.request.use(
-  (config) => {
+  async (config) => {
     const updatedConfig = { ...config };
-    const accessToken = Cookies.get('accesstoken');
+    const accessToken = await getAccessToken();
 
     if (accessToken) {
       updatedConfig.headers.Authorization = accessToken;
@@ -32,4 +31,4 @@ instance.interceptors.response.use(
   }
 );
 
-export default instance
+export default instance;
