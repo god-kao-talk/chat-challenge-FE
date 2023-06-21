@@ -7,7 +7,7 @@ import FriendListItem from './element/FriendListItem';
 import useDecodeJWT from '../hooks/useDecodeJWT';
 
 const Profile = () => {
-  const [friendList, setFriendList] = useState([]);
+  const [friendList, setFriendList] = useState(null);
 
   const decodedToken = useDecodeJWT();
   const userNickname = decodedToken.nickname;
@@ -34,9 +34,8 @@ const Profile = () => {
       <section className='friendsList'>
         <h2>친구 목록</h2>
         <List>
-          {friendList.map((friend) => (
-            <FriendListItem key={friend.id} friend={friend} />
-          ))}
+          {friendList &&
+            friendList.map((friend) => <FriendListItem key={friend.id} friend={friend} />)}
         </List>
       </section>
     </StProfile>
