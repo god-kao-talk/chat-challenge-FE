@@ -29,7 +29,10 @@ const LoginPage = () => {
   const inputDataSubmitHandler = async (event) => {
     event.preventDefault();
     const response = await login({ email, password });
-    response && navigate(PATH_URL.MAIN);
+    if (response) {
+      alert('로그인이 완료되었습니다.');
+      navigate(PATH_URL.MAIN);
+    }
   };
 
   const googleLoginHandler = async () => {

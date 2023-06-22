@@ -6,14 +6,16 @@ import reportWebVitals from './reportWebVitals';
 import axios from 'axios';
 import store from './redux/config/configStore';
 import { Provider } from 'react-redux';
+import { RecoilRoot } from 'recoil';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 axios.defaults.withCredentials = true;
 root.render(
   <Provider store={store}>
-    <App />
+    <RecoilRoot>
+      <App />
+    </RecoilRoot>
   </Provider>
-
 );
 
 // If you want to start measuring performance in your app, pass a function

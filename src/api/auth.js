@@ -1,10 +1,10 @@
-import axios from 'axios';
-import { BASE_URL, TOKEN } from '../shared/constants';
+import { TOKEN } from '../shared/constants';
 import Cookies from 'js-cookie';
+import instance from './axios';
 
 export const signup = async (inputData) => {
   try {
-    const response = await axios.post(`${BASE_URL}/users/signup`, inputData);
+    const response = await instance.post('/users/signup', inputData);
     return response;
   } catch (error) {
     console.error('Signup Axios Error', error);
@@ -14,7 +14,7 @@ export const signup = async (inputData) => {
 
 export const login = async (inputData) => {
   try {
-    const response = await axios.post(`${BASE_URL}/login`, inputData);
+    const response = await instance.post('/login', inputData);
 
     const accesstoken = response.headers.authorization;
     const refreshtoken = response.headers['authorization-refresh'];
