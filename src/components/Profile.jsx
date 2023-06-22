@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import List from '../style/_list';
-import StProfile from '../style/_profile';
-import ProfileImg from './element/ProfileImg';
-import { getFriendList } from '../api/friend';
-import FriendListItem from './element/FriendListItem';
-import useDecodeJWT from '../hooks/useDecodeJWT';
 import { useRecoilValue } from 'recoil';
 import { isFriendAddedState } from '../recoil/friendState';
+import { getFriendList } from '../api/friend';
+import useDecodeJWT from '../hooks/useDecodeJWT';
+import ProfileImg from './element/ProfileImg';
+import FriendListItem from './element/FriendListItem';
+import List from '../style/_list';
+import StProfile from '../style/_profile';
 
 const Profile = () => {
   const [friendList, setFriendList] = useState(null);
@@ -21,13 +21,8 @@ const Profile = () => {
     setFriendList(friendListServerData);
   };
 
-  // useEffect(() => {
-
-  // }, []);
-
   useEffect(() => {
     fetchFriendList();
-    console.log('test');
   }, [isFriendsAdded]);
 
   return (

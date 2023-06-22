@@ -1,25 +1,26 @@
 import React, { useState } from 'react';
-import StFriends from '../style/_friends';
-import List from '../style/_list';
-import ProfileImg from './element/ProfileImg';
-import Portal from '../utils/portal';
-import Modal from './element/Modal';
-import useInput from '../hooks/useInput';
-import { addFriend } from '../api/friend';
 import { useRecoilState } from 'recoil';
 import { isFriendAddedState } from '../recoil/friendState';
+import { addFriend } from '../api/friend';
+import ProfileImg from './element/ProfileImg';
+import Modal from './element/Modal';
+import useInput from '../hooks/useInput';
+import StFriends from '../style/_friends';
+import List from '../style/_list';
+import Portal from '../utils/portal';
 
 const Friends = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFriendsAdded, setIsFriendAdded] = useRecoilState(isFriendAddedState);
 
-  const { inputData, inputChangeHandler } = useInput();
+  const { inputData, setInputData, inputChangeHandler } = useInput();
 
   const addFriendHandler = async () => {
     try {
       const response = await addFriend(inputData);
       setIsFriendAdded(!isFriendsAdded);
       alert(response.data);
+      setInputData('');
       setIsModalOpen(false);
     } catch (error) {
       alert('email을 다시 한 번 확인해주세요.');
