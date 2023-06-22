@@ -1,16 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { styled } from 'styled-components';
 import user01 from '../../img/userImg_01.png';
 
 // TODO: online 상태 props 받아서 처리 추가
 const ProfileImg = ({ imgUrl }) => {
+  const [imgLoadError, setImgLoadError] = useState(false);
+
+  const imgErrorHandler = () => {
+    setImgLoadError(true);
+  };
+
   return (
     <StImg className='profileImg'>
       <div>
-        {imgUrl === null || imgUrl === undefined ? (
+        {imgLoadError || imgUrl === null || imgUrl === undefined ? (
           <img src={user01} alt='default profile' />
         ) : (
-          <img src={imgUrl} alt='profile' />
+          <img src={imgUrl} alt='profile' onError={imgErrorHandler} />
         )}
       </div>
       <span className='onlineAlert'>&nbsp;</span>

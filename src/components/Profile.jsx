@@ -15,6 +15,7 @@ const Profile = () => {
   const decodedToken = useDecodeJWT();
   const userNickname = decodedToken.nickname;
   const userEmail = decodedToken.email;
+  const userImg = decodedToken.imageUrl;
 
   const fetchFriendList = async () => {
     const friendListServerData = await getFriendList();
@@ -28,7 +29,7 @@ const Profile = () => {
   return (
     <StProfile>
       <div className='profile'>
-        <ProfileImg />
+        <ProfileImg imgUrl={userImg} />
         <p>
           {userNickname}
           <span>{userEmail}</span>
