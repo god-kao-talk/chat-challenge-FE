@@ -5,13 +5,26 @@ import ProfileImg from './element/ProfileImg';
 import Portal from '../utils/portal';
 import Modal from './element/Modal';
 import useInput from '../hooks/useInput';
+import { addFriend } from '../api/friend';
+import { useRecoilState } from 'recoil';
+import { isFriendAddedState } from '../recoil/friendState';
 
 const Friends = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isFriendsAdded, setIsFriendAdded] = useRecoilState(isFriendAddedState);
 
   const { inputData, inputChangeHandler } = useInput();
 
-  const addFriendHandler = () => {};
+  const addFriendHandler = async () => {
+    try {
+      const response = await addFriend(inputData);
+      setIsFriendAdded(!isFriendsAdded);
+      alert(response.data);
+      setIsModalOpen(false);
+    } catch (error) {
+      alert('email을 다시 한 번 확인해주세요.');
+    }
+  };
 
   return (
     <StFriends>
@@ -41,6 +54,7 @@ const Friends = () => {
           label='사용자 email'
           buttonContent='친구 추가하기'
           id='addFriend'
+          inputType='email'
         />
       </Portal>
     </StFriends>

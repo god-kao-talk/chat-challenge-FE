@@ -10,3 +10,12 @@ export const getFriendList = async () => {
     console.error('getFriendList Axios Error', error);
   }
 };
+
+export const addFriend = async (email) => {
+  try {
+    const response = await instance.post(RESOURCE, { email });
+    return response;
+  } catch (error) {
+    console.error('addFriend Axios Error', error);
+  }
+};

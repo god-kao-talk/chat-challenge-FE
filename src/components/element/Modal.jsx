@@ -14,7 +14,7 @@ const Modal = (props) => {
           <StInputWrapper>
             <label htmlFor={props.id}>{props.label}</label>
             <input
-              type='text'
+              type={props.inputType}
               id={props.id}
               value={props.inputData}
               onChange={props.inputChangeHandler}

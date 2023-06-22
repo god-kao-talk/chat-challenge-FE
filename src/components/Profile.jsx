@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import List from '../style/_list';
 import StProfile from '../style/_profile';
 import ProfileImg from './element/ProfileImg';
 import { getFriendList } from '../api/friend';
 import FriendListItem from './element/FriendListItem';
 import useDecodeJWT from '../hooks/useDecodeJWT';
+import { useRecoilValue } from 'recoil';
+import { isFriendAddedState } from '../recoil/friendState';
 
 const Profile = () => {
   const [friendList, setFriendList] = useState(null);
+  const isFriendsAdded = useRecoilValue(isFriendAddedState);
 
   const decodedToken = useDecodeJWT();
   const userNickname = decodedToken.nickname;
@@ -18,9 +21,14 @@ const Profile = () => {
     setFriendList(friendListServerData);
   };
 
-  useState(() => {
+  // useEffect(() => {
+
+  // }, []);
+
+  useEffect(() => {
     fetchFriendList();
-  }, [friendList]);
+    console.log('test');
+  }, [isFriendsAdded]);
 
   return (
     <StProfile>
