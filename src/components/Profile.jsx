@@ -7,10 +7,13 @@ import ProfileImg from './element/ProfileImg';
 import FriendListItem from './element/FriendListItem';
 import List from '../style/_list';
 import StProfile from '../style/_profile';
+import useRandomImgColor from '../hooks/useRandomImgColor';
 
 const Profile = () => {
   const [friendList, setFriendList] = useState(null);
   const isFriendsAdded = useRecoilValue(isFriendAddedState);
+
+  const defaultImgColor = useRandomImgColor();
 
   const decodedToken = useDecodeJWT();
   const userNickname = decodedToken.nickname;
@@ -29,7 +32,7 @@ const Profile = () => {
   return (
     <StProfile>
       <div className='profile'>
-        <ProfileImg imgUrl={userImg} />
+        <ProfileImg imgUrl={userImg} defaultImgColor={defaultImgColor} />
         <p>
           {userNickname}
           <span>{userEmail}</span>

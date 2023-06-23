@@ -1,20 +1,23 @@
 import React, { useState } from 'react';
 import { styled } from 'styled-components';
-import user01 from '../../img/userImg_01.png';
+import { ReactComponent as Icon } from '../../img/discord-icon-white.svg';
 
 // TODO: online 상태 props 받아서 처리 추가
-const ProfileImg = ({ imgUrl }) => {
+const ProfileImg = ({ imgUrl, defaultImgColor }) => {
   const [imgLoadError, setImgLoadError] = useState(false);
 
   const imgErrorHandler = () => {
     setImgLoadError(true);
   };
 
+  // <img src={defaultImgBlue} alt='default profile' />
   return (
-    <StImg className='profileImg'>
+    <StImg className='profileImg' defaultImgColor={defaultImgColor}>
       <div>
         {imgLoadError || imgUrl === null || imgUrl === undefined ? (
-          <img src={user01} alt='default profile' />
+          <div className='iconWrapperCircle'>
+            <Icon />
+          </div>
         ) : (
           <img src={imgUrl} alt='profile' onError={imgErrorHandler} />
         )}
@@ -25,6 +28,10 @@ const ProfileImg = ({ imgUrl }) => {
 };
 
 export default ProfileImg;
+
+// const defaultImgColorList = ['#5865F2', '#57F287', '#FEE75C', '#EB459E', '#ED4245', '#000000'];
+
+// const defaultImgColor = defaultImgColorList[Math.floor(Math.random() * defaultImgColorList.length)];
 
 const StImg = styled.div`
   position: relative;
@@ -38,6 +45,19 @@ const StImg = styled.div`
     border-radius: 30px;
     & img {
       width: 100%;
+    }
+    & .iconWrapperCircle {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background-color: ${(props) => props.defaultImgColor};
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      & svg {
+        width: 60%;
+      }
     }
   }
   & > .onlineAlert {
