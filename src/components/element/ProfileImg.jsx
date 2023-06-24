@@ -13,7 +13,7 @@ const ProfileImg = ({ imgUrl }) => {
           <img src={imgUrl} alt='profile' />
         )}
       </div>
-      <span className='onlineAlert'>&nbsp;</span>
+      {/* <span className='onlineAlert'>&nbsp;</span> */}
     </StImg>
   );
 };
