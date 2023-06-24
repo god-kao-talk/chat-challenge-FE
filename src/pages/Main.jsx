@@ -5,10 +5,10 @@ import Friends from '../components/Friends';
 const Main = () => {
   return (
     <>
-        <Profile />
-        <Friends />
+      <Profile />
+      <Friends />
     </>
-  )
-}
+  );
+};
 
-export default Main
+export default Main;

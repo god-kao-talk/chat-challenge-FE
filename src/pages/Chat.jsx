@@ -43,9 +43,13 @@ function Chat() {
     const roomCode = params.roomcode;
 
     //useQuery는 캐싱 기능이 있음. 캐시 키 값에 대해 반복적인 호출을 유발할 수 있음
-    const { isLoading, isError, data } = useQuery(`/chat/${roomCode}`, () => getChattingList(roomCode), {
-        refetchOnWindowFocus: false,
-    });
+    const { isLoading, isError, data } = useQuery(
+        `/chat/${roomCode}`,
+        () => getChattingList(roomCode),
+        {
+            refetchOnWindowFocus: false,
+        }
+    );
 
     useEffect(() => {
         if (data) {
@@ -108,7 +112,9 @@ function Chat() {
                 minute: '2-digit',
             }),
         };
-        input && messageInfo.message.trim() && stompClient.send('/app/chat.send', {}, JSON.stringify(messageInfo));
+        input &&
+            messageInfo.message.trim() &&
+            stompClient.send('/app/chat.send', {}, JSON.stringify(messageInfo));
 
         setInput('');
     };
@@ -135,7 +141,7 @@ function Chat() {
         <StChat>
             <ChatNav>
                 <button
-                    type="button"
+                    type='button'
                     className={copied === true ? 'success' : ''}
                     onClick={() => handleCopyClipBoard(roomCode)}
                 >
@@ -163,7 +169,7 @@ function Chat() {
                 </ChatLog>
                 <ChatInputArea>
                     <input
-                        type="text"
+                        type='text'
                         value={input}
                         onKeyUp={(e) => {
                             if (e.key === 'Enter') {
@@ -173,7 +179,7 @@ function Chat() {
                         }}
                         onChange={(e) => setInput(e.target.value)}
                     />
-                    <button onClick={sendMsg} className="message-submit">
+                    <button onClick={sendMsg} className='message-submit'>
                         <BsFillPlusCircleFill />
                     </button>
                 </ChatInputArea>
@@ -195,14 +201,16 @@ const IndividualChat = ({
         <>
             {messagetype === 'TALK' ? (
                 <IndividualChatWrapper
-                    className={previousType !== 'ENTER' && previousId === commentUserId ? 'hide' : ''}
+                    className={
+                        previousType !== 'ENTER' && previousId === commentUserId ? 'hide' : ''
+                    }
                 >
                     <ProfileImage>
                         <ProfileImg />
                     </ProfileImage>
                     <div>
-                        <div className="commentInfo">
-                            <span className="nickname">{commentUserId}</span>
+                        <div className='commentInfo'>
+                            <span className='nickname'>{commentUserId}</span>
                             {commentDate.toLocaleString('ko-KR', {
                                 year: 'numeric',
                                 month: '2-digit',
@@ -228,7 +236,7 @@ const IndividualChat = ({
 };
 
 const StChat = styled.div`
-    width: 100%;
+    width: calc(100% - 300px);
     height: 100vh;
 `;
 
@@ -333,7 +341,7 @@ const ChatInputArea = styled.div`
     position: fixed;
     left: 110px;
     bottom: 30px;
-    width: calc(100% - 180px);
+    width: calc(100% - 450px);
     display: flex;
     height: 45px;
     background-color: #383a40;
