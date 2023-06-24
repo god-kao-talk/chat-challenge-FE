@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import { isFriendAddedState } from '../recoil/friendState';
 import { addFriend } from '../api/friend';
@@ -6,14 +6,17 @@ import ProfileImg from './element/ProfileImg';
 import Modal from './element/Modal';
 import useInput from '../hooks/useInput';
 import StFriends from '../style/_friends';
-import List from '../style/_list';
 import Portal from '../utils/portal';
+import useRandomImgColor from '../hooks/useRandomImgColor';
+import useGetFriendList from '../hooks/useGetFriendList';
 
 const Friends = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFriendsAdded, setIsFriendAdded] = useRecoilState(isFriendAddedState);
 
   const { inputData, setInputData, inputChangeHandler } = useInput();
+  const defaultImgColor = useRandomImgColor();
+  const { friendList, fetchFriendList } = useGetFriendList();
 
   const addFriendHandler = async () => {
     try {
@@ -27,6 +30,10 @@ const Friends = () => {
     }
   };
 
+  useEffect(() => {
+    fetchFriendList();
+  }, [isFriendsAdded]);
+
   return (
     <StFriends>
       <nav>
@@ -35,13 +42,18 @@ const Friends = () => {
         </button>
       </nav>
       <section>
-        <h2>온라인 친구</h2>
-        <List>
-          <li>
-            <ProfileImg />
-            <p>사용자 이름</p>
-          </li>
-        </List>
+        <h2>모든 친구 - {friendList.length}명</h2>
+        <ul>
+          {friendList?.map((friend) => (
+            <li key={friend.key}>
+              <ProfileImg imgUrl={friend.imageUrl} defaultImgColor={defaultImgColor} />
+              <p>
+                {friend.nickname}
+                <span>{friend.email}</span>
+              </p>
+            </li>
+          ))}
+        </ul>
       </section>
       <Portal>
         <Modal

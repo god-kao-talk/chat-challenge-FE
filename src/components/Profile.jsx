@@ -8,9 +8,9 @@ import FriendListItem from './element/FriendListItem';
 import List from '../style/_list';
 import StProfile from '../style/_profile';
 import useRandomImgColor from '../hooks/useRandomImgColor';
+import useGetFriendList from '../hooks/useGetFriendList';
 
 const Profile = () => {
-  const [friendList, setFriendList] = useState(null);
   const isFriendsAdded = useRecoilValue(isFriendAddedState);
 
   const defaultImgColor = useRandomImgColor();
@@ -20,10 +20,7 @@ const Profile = () => {
   const userEmail = decodedToken.email;
   const userImg = decodedToken.imageUrl;
 
-  const fetchFriendList = async () => {
-    const friendListServerData = await getFriendList();
-    setFriendList(friendListServerData);
-  };
+  const { friendList, fetchFriendList } = useGetFriendList();
 
   useEffect(() => {
     fetchFriendList();
