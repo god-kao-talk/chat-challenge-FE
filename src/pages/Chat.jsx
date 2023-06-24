@@ -3,28 +3,34 @@ import { useState, useRef } from 'react';
 import { styled } from 'styled-components';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
-import { receiveChatRoomInfo } from '../api/chat';
+import { getChattingList } from '../api/chat';
 import { useQuery, useMutation } from 'react-query';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { submitPicture } from '../api/api';
 import Cookies from 'js-cookie';
 import { over } from 'stompjs';
+import ProfileImg from '../components/element/ProfileImg';
+import useDecodeJWT from '../hooks/useDecodeJWT';
+import { BsFillPlusCircleFill } from 'react-icons/bs';
 
 var stompClient = null;
+
 function Chat() {
     // 입력값 상태관리
     const [input, setInput] = useState('');
     const [messageList, setMessageList] = useState([]);
     const [chatRoomInfo, setChatRoomInfo] = useState({});
-    // const [uploadImage, setUploadImage] = useState(null);
-    // const [publicChats, setPublicChats] = useState([]);
-    // const [privateChats, setPrivateChats] = useState(new Map());
 
-    // 채팅방에 입장한 본인이 누구인지를 상태관리
     const [whoIAm, setWhoIAm] = useState(null);
+
     useEffect(() => {
         setWhoIAm(chatRoomInfo.userId);
     }, [chatRoomInfo]);
+
+    // 사용자 정보 불러오기
+    const decodedToken = useDecodeJWT();
+    const userNickname = decodedToken.nickname;
+    const userEmail = decodedToken.email;
 
     // 스크롤 부분(채팅방 입장시 가장 아래로, 채팅로그가 업데이트 될 때마다 가장 아래로)
     const scrollRef = useRef();
@@ -32,28 +38,24 @@ function Chat() {
         scrollRef.current && (scrollRef.current.scrollTop = scrollRef.current.scrollHeight);
     }, [messageList]);
 
-    // 쿠키에서 토큰 추출
-    const token = Cookies.get('Authorization');
-
     // 방 아이디 추출
     const params = useParams();
-    const roomCode = params.id;
+    const roomCode = params.roomcode;
 
     //useQuery는 캐싱 기능이 있음. 캐시 키 값에 대해 반복적인 호출을 유발할 수 있음
-    const { isLoading, isError, data } = useQuery(
-        `receiveRoomInfo/${roomCode}`,
-        () => receiveChatRoomInfo({ token, roomCode }),
-        { refetchOnWindowFocus: false }
-    );
+    const { isLoading, isError, data } = useQuery(`/chat/${roomCode}`, () => getChattingList(roomCode), {
+        refetchOnWindowFocus: false,
+    });
 
     useEffect(() => {
         if (data) {
             console.log('data가 있어! : ', data);
             setChatRoomInfo(data);
-            setMessageList(data.chatList);
+            setMessageList(data.data);
             console.log('chatRoomInfo 설정중! : ', chatRoomInfo);
 
-            if (Object.keys(chatRoomInfo).length !== 0) {
+            // if (Object.keys(chatRoomInfo).length !== 0) {
+            if (data.status === 200) {
                 // endpoint로 SockJS 객체, StompClient 객체 생성
                 let Sock = new SockJS(`${process.env.REACT_APP_SERVER_URL}/ws-chat`);
                 console.log('Sock 설정중! : ', Sock);
@@ -64,16 +66,14 @@ function Chat() {
                 stompClient.connect({}, onConnected, onError);
             }
         }
-    }, [data, chatRoomInfo]);
+    }, [data]);
 
     const onConnected = () => {
         console.log('roomId에 해당하는 채팅방 구독하기');
-        //subscribe(subscribe url,해당 url로 메시지를 받을때마다 실행할 함수)
-        stompClient.subscribe('/topic/chat/room/' + roomCode, function async(message) {
+        stompClient.subscribe('/exchange/chat.exchange/room.' + roomCode, function async(message) {
             setMessageList((prev) => [...prev, JSON.parse(message.body)]);
         });
 
-        // stompClient.subscribe('/user/'+userData.username+'/private', onPrivateMessage);
         userJoin();
     };
 
@@ -81,12 +81,12 @@ function Chat() {
         console.log('채팅방 입장 : ENTER');
         var chatMessage = {
             type: 'ENTER',
-            nickname: chatRoomInfo.sender,
-            email: chatRoomInfo.email,
-            roomCode: chatRoomInfo.roomCode,
+            nickname: userNickname,
+            email: userEmail,
+            roomCode: roomCode,
             message: '',
         };
-        stompClient.send('/app/chat/enter', {}, JSON.stringify(chatMessage));
+        stompClient.send('/app/chat.enter', {}, JSON.stringify(chatMessage));
     };
 
     const onError = (err) => {
@@ -96,47 +96,33 @@ function Chat() {
     const sendMsg = () => {
         const messageInfo = {
             type: 'TALK',
-            sender: chatRoomInfo.sender,
-            userId: chatRoomInfo.userId,
-            roomId: chatRoomInfo.roomId,
-            message: input.trim(),
+            nickname: userNickname,
+            email: userEmail,
+            roomCode: roomCode,
+            message: input,
+            createdAt: new Date().toLocaleString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+            }),
         };
-        input && messageInfo.message.trim() && stompClient.send('/app/chat/send', {}, JSON.stringify(messageInfo));
+        input && messageInfo.message.trim() && stompClient.send('/app/chat.send', {}, JSON.stringify(messageInfo));
 
         setInput('');
     };
+    const [copied, setCopied] = useState(false);
 
-    // const prepareUploadImage = (e) => {
-    //     const file = e.target.files[0];
-    //     const formData = new FormData();
-    //     formData.append('image', file);
-    //     setUploadImage(formData);
-    // };
-
-    // const submitPictureApi = useMutation(submitPicture, {
-    //   onSuccess: (response) => {
-    //     stompClient.publish({
-    //       destination: "/pub/chat/send",
-    //       headers: { Authentication: token },
-    //       body: JSON.stringify({
-    //         type: "IMAGE",
-    //         sender: chatRoomInfo.sender,
-    //         userId: chatRoomInfo.userId,
-    //         roomId: chatRoomInfo.roomId,
-    //         image: response,
-    //       }),
-    //     });
-    //   },
-    //   onError: () => {
-    //     alert("사진 전송에 실패했습니다.");
-    //   },
-    // });
-
-    // const uploadImageHandler = () => {
-    //   console.log(uploadImage);
-    //   uploadImage !== null &&
-    //     submitPictureApi.mutate({ token, file: uploadImage });
-    // };
+    const handleCopyClipBoard = (text) => {
+        try {
+            navigator.clipboard.writeText(text);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1500);
+        } catch (error) {
+            alert('클립보드 복사에 실패하였습니다.');
+        }
+    };
 
     if (isLoading) {
         return <p>로딩중입니다!</p>;
@@ -146,7 +132,17 @@ function Chat() {
     }
 
     return (
-        <div>
+        <StChat>
+            <ChatNav>
+                <button
+                    type="button"
+                    className={copied === true ? 'success' : ''}
+                    onClick={() => handleCopyClipBoard(roomCode)}
+                >
+                    <span>#</span>&nbsp;
+                    {roomCode}
+                </button>
+            </ChatNav>
             <ChatRoomWrapper>
                 <ChatLog ref={scrollRef}>
                     {messageList.map((item, index) => (
@@ -154,19 +150,20 @@ function Chat() {
                             whoIAm={whoIAm}
                             key={index}
                             messagetype={item.type}
-                            previousId={messageList[index - 1]?.userId}
+                            previousId={messageList[index - 1]?.nickname}
                             previousType={messageList[index - 1]?.type}
-                            commentUserId={item.userId}
+                            previousTime={messageList[index - 1]?.createdAt}
+                            commentUserId={item.nickname}
                             commentUserProfileImgUrl={item.profile_image}
-                            commentDate={item.date}
-                            commentUserName={item.sender}
+                            commentDate={item.createdAt}
                             commentContent={item.message}
                             imageFile={item.image}
                         />
                     ))}
                 </ChatLog>
                 <ChatInputArea>
-                    <textarea
+                    <input
+                        type="text"
                         value={input}
                         onKeyUp={(e) => {
                             if (e.key === 'Enter') {
@@ -175,276 +172,205 @@ function Chat() {
                             }
                         }}
                         onChange={(e) => setInput(e.target.value)}
-                    ></textarea>
-                    <div className="button-pair">
-                        {/* <label htmlFor='fileInput' className='picture-choice-label'>
-              사진선택
-              <input
-                type='file'
-                id='fileInput'
-                className='picture-choice'
-                onChange={prepareUploadImage}
-              />
-            </label> */}
-                        {/* <button onClick={uploadImageHandler} className='picture-submit'>
-              사진전송
-            </button> */}
-                        <button onClick={sendMsg} className="message-submit">
-                            전송
-                        </button>
-                    </div>
+                    />
+                    <button onClick={sendMsg} className="message-submit">
+                        <BsFillPlusCircleFill />
+                    </button>
                 </ChatInputArea>
             </ChatRoomWrapper>
-        </div>
+        </StChat>
     );
 }
 
 const IndividualChat = ({
-    previousId,
-    previousType,
-    commentUserId,
-    commentUserProfileImgUrl,
     commentDate,
-    commentUserName,
+    commentUserId,
+    previousType,
+    previousId,
+    previousTime,
     commentContent,
-    whoIAm,
     messagetype,
-    imageFile,
 }) => {
     return (
         <>
             {messagetype === 'TALK' ? (
                 <IndividualChatWrapper
-                    previousId={previousId}
-                    previousType={previousType}
-                    whoIAm={whoIAm}
-                    commentUserId={commentUserId}
+                    className={previousType !== 'ENTER' && previousId === commentUserId ? 'hide' : ''}
                 >
-                    <ProfileImage
-                        previousId={previousId}
-                        previousType={previousType}
-                        whoIAm={whoIAm}
-                        commentUserId={commentUserId}
-                    >
-                        <div className="img-wrapper">
-                            <img src={commentUserProfileImgUrl} />
-                        </div>
+                    <ProfileImage>
+                        <ProfileImg />
                     </ProfileImage>
                     <div>
-                        <p className="chat-name">{commentUserName}</p>
-                        <div className="chat-bubble-wrapper">
-                            <div className="chat-bubble">
-                                <div>{commentContent}</div>
-                            </div>
-                            <div className="comment-date">{commentDate}</div>
+                        <div className="commentInfo">
+                            <span className="nickname">{commentUserId}</span>
+                            {commentDate.toLocaleString('ko-KR', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                            })}
                         </div>
+                        <div>{commentContent}</div>
                     </div>
                 </IndividualChatWrapper>
             ) : messagetype === 'ENTER' ? (
                 <EntranceText>
                     <div>{commentContent}</div>
                 </EntranceText>
-            ) : messagetype === 'LEAVE' ? (
+            ) : (
                 <EscapeText>
                     <div>{commentContent}</div>
                 </EscapeText>
-            ) : (
-                <IndividualChatWrapper previousId={previousId} whoIAm={whoIAm} commentUserId={commentUserId}>
-                    <ProfileImage previousId={previousId} whoIAm={whoIAm} commentUserId={commentUserId}>
-                        <div className="img-wrapper">
-                            <img src={commentUserProfileImgUrl} />
-                        </div>
-                    </ProfileImage>
-                    <div>
-                        <p className="chat-name">{commentUserName}</p>
-                        <div className="chat-bubble-wrapper">
-                            <UploadedImage src={imageFile}></UploadedImage>
-                            <div className="comment-date">{commentDate}</div>
-                        </div>
-                    </div>
-                </IndividualChatWrapper>
             )}
         </>
     );
 };
 
+const StChat = styled.div`
+    width: 100%;
+    height: 100vh;
+`;
+
+// 제일 상위의 박스
+const ChatRoomWrapper = styled.div`
+    width: 100%;
+    height: calc(100vh - 110px);
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    box-sizing: border-box;
+`;
+
+const ChatNav = styled.nav`
+    width: 100%;
+    height: 48px;
+    border-bottom: 2px solid #232428;
+    line-height: 48px;
+    text-indent: 20px;
+    & button {
+        font-size: 16px;
+        transition: 0.3s;
+    }
+    & button.success::after {
+        content: '✔️ copied';
+        display: inline-block;
+        padding-left: 7px;
+        color: green;
+        font-size: 16px;
+    }
+    & span {
+        color: #ccc;
+    }
+`;
+
+// 채팅 한 줄
 const IndividualChatWrapper = styled.div`
-    display: ${(props) => (props.commentUserId == props.whoIAm ? 'block' : 'flex')};
-    ${(props) => props.commentUserId == props.whoIAm && 'align-self : flex-end'};
-    ${(props) => (props.commentUserId == props.whoIAm ? 'width : 60%' : 'width : 80%')};
-    ${(props) => (props.previousId == props.commentUserId ? 'margin : 5px 0 5px 10px' : 'margin: 5px 0 5px 10px')};
-
-    .chat-name {
-        display: ${(props) =>
-            props.commentUserId == props.whoIAm ||
-            (props.previousId == props.commentUserId && props.previousType !== 'ENTER')
-                ? 'none'
-                : 'block'};
-        color: rgb(80, 80, 80);
-        font-size: 15px;
-        margin: 0 10px 0 10px;
-    }
-
-    .chat-bubble-wrapper {
-        display: flex;
-        flex-direction: ${(props) => (props.commentUserId == props.whoIAm ? 'row-reverse' : 'row')};
-        ${(props) =>
-            props.previousId == props.commentUserId && props.previousType !== 'ENTER'
-                ? 'margin : 0px 10px 0px 50px'
-                : 'margin : 10px'};
-
-        .chat-bubble {
-            background-color: ${(props) => (props.commentUserId == props.whoIAm ? 'yellow' : 'white')};
-            padding: 10px;
-            border-radius: 10px;
-        }
-    }
-
-    .comment-date {
-        align-self: flex-end;
-        width: 140px;
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    min-height: 44px;
+    .commentInfo {
         font-size: 11px;
-        margin-left: 5px;
-        text-align: ${(props) => (props.commentUserId == props.whoIAm ? 'right' : 'left')};
-        color: grey;
+        color: #ccc;
+    }
+    .commentInfo > .nickname {
+        font-size: 15px;
+        color: #e2e2e2;
+        padding-right: 7px;
+    }
+    .commentInfo.hide {
+        display: none;
+    }
+
+    &.hide > div:first-child {
+        display: none;
+    }
+    &.hide > div:last-child {
+        padding-left: 50px;
     }
 `;
 
 const ProfileImage = styled.div`
     div {
         display: inline-block;
-    }
-
-    .img-wrapper {
-        display: ${(props) =>
-            props.commentUserId == props.whoIAm ||
-            (props.previousId == props.commentUserId && props.previousType !== 'ENTER')
-                ? 'none'
-                : 'block'};
-        border-radius: 10px;
-        height: 40px;
+        background-color: #fff;
         width: 40px;
+        height: 40px;
+        border-radius: 25px;
         overflow: hidden;
-
-        img {
-            height: 40px;
-            width: 40px;
-        }
     }
 `;
 
 const EntranceText = styled.div`
-    display: flex;
-    justify-content: center;
-    margin: 10px 0 10px 0;
-
-    div {
-        width: 30%;
-        background-color: #86b34f;
-        border-radius: 10px;
-        text-align: center;
-        color: #eaeaea;
-        font-weight: bold;
-    }
+    width: 100%;
+    text-align: center;
+    color: #fff;
 `;
 
 const EscapeText = styled.div`
-    display: flex;
-    justify-content: center;
-    margin: 10px 0 10px 0;
-
-    div {
-        width: 30%;
-        background-color: #d74b53;
-        border-radius: 10px;
-        text-align: center;
-        color: #eaeaea;
-        font-weight: bold;
-    }
+    width: 100%;
+    text-align: center;
+    color: #fff;
 `;
 
-const ChatRoomWrapper = styled.div`
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: auto;
-    justify-content: auto;
-`;
-
+// 여기도 individual이랑 겹치는 부분인듯
 const ChatLog = styled.div`
-    display: flex;
-    flex-direction: column;
-    overflow: scroll;
-    height: 70%;
-    background-color: rgb(186, 206, 224);
+    width: 100%;
+    height: calc(100vh - 110px);
+    overflow-y: auto;
+    &::-webkit-scrollbar {
+        width: 2px;
+    }
+    &::-webkit-scrollbar-thumb {
+        width: 2px;
+        background-color: #555;
+        border-radius: 3px;
+    }
 `;
 
 const ChatInputArea = styled.div`
+    position: fixed;
+    left: 110px;
+    bottom: 30px;
+    width: calc(100% - 180px);
     display: flex;
-    height: 20%;
-
-    textarea {
-        height: 60%;
-        width: 100%;
+    height: 45px;
+    background-color: #383a40;
+    border-radius: 5px;
+    input {
+        position: absolute;
+        left: 50px;
+        width: calc(100% - 70px);
+        height: 45px;
         border: none;
-        padding: 10px;
+        padding: 10px 0;
+        box-sizing: border-box;
         font-size: 20px;
-        background-color: rgb(245, 245, 240);
-    }
-
-    div {
-        display: flex;
-        justify-content: right;
-    }
-
-    .button-pair {
-        display: flex;
-        flex-direction: column;
-        height: 70%;
-        background-color: rgb(245, 245, 240);
-
-        input {
-            display: none;
+        background-color: transparent;
+        color: #fff;
+        &::-webkit-scrollbar {
+            width: 0px;
+            background-color: #383a40;
         }
-
-        button {
-            border: none;
-            border-radius: 10px;
-            height: 50%;
-            width: 80px;
-            color: white;
-            font-weight: bolder;
-            cursor: pointer;
+        &::-webkit-scrollbar-thumb {
+            width: 2px;
+            background-color: #555;
+            border-radius: 3px;
         }
-
-        .picture-choice-label {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: none;
-            border-radius: 10px;
-            height: 50%;
-            width: 80px;
-            color: white;
-            font-weight: bolder;
-            cursor: pointer;
-            background-color: rgb(47, 79, 79);
-        }
-
-        .picture-submit {
-            background-color: #6f4f28;
-        }
-        .message-submit {
-            background-color: rgb(112, 128, 144);
+        &::-webkit-scrollbar-track {
+            background-color: #383a40;
         }
     }
-`;
-
-const UploadedImage = styled.img`
-    align-self: flex-end;
-    max-height: 300px;
-    max-width: 200px;
-    border-radius: 15px;
+    .message-submit {
+        position: absolute;
+        top: 12px;
+        left: 15px;
+        width: 30px;
+        height: 30px;
+        font-size: 25px;
+        color: #b5bac1;
+    }
 `;
 
 export default Chat;

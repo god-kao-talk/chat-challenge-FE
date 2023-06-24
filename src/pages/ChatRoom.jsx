@@ -114,38 +114,6 @@ function ChatRoom() {
     setInput("");
   };
 
-  const prepareUploadImage = (e) => {
-    const file = e.target.files[0];
-    const formData = new FormData();
-    formData.append("image", file);
-    setUploadImage(formData);
-  };
-
-  // const submitPictureApi = useMutation(submitPicture, {
-  //   onSuccess: (response) => {
-  //     stompClient.publish({
-  //       destination: "/pub/chat/send",
-  //       headers: { Authentication: token },
-  //       body: JSON.stringify({
-  //         type: "IMAGE",
-  //         sender: chatRoomInfo.sender,
-  //         userId: chatRoomInfo.userId,
-  //         roomId: chatRoomInfo.roomId,
-  //         image: response,
-  //       }),
-  //     });
-  //   },
-  //   onError: () => {
-  //     alert("사진 전송에 실패했습니다.");
-  //   },
-  // });
-
-  // const uploadImageHandler = () => {
-  //   console.log(uploadImage);
-  //   uploadImage !== null &&
-  //     submitPictureApi.mutate({ token, file: uploadImage });
-  // };
-
   if (isLoading) {
     return <p>로딩중입니다!</p>;
   }
