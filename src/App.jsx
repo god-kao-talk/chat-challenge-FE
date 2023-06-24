@@ -29,7 +29,7 @@ function App() {
                         }
                     />
                     <Route
-                        path={PATH_URL.CHAT}
+                        path={'/chat/:roomcode'}
                         element={
                             <Layout>
                                 <Chat />

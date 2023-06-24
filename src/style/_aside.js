@@ -12,6 +12,23 @@ const StAside = styled.aside`
         margin: 10px 0;
     }
     // 채팅방 리스트
+    & ul{
+        height: calc(100vh - 150px);
+        overflow-y: auto;
+        padding: 0 10px;
+        box-sizing: border-box;
+        &::-webkit-scrollbar{
+            width:2px;
+        }
+        &::-webkit-scrollbar-thumb{
+            width: 2px;
+            background-color: #555;
+            border-radius:3px;
+        }
+        &::-webkit-scrollbar-track{
+
+        }
+    }
     & ul li{
         width: 48px;
         height: 48px;

@@ -22,7 +22,7 @@ const ProfileImg = ({ imgUrl, defaultImgColor }) => {
           <img src={imgUrl} alt='profile' onError={imgErrorHandler} />
         )}
       </div>
-      <span className='onlineAlert'>&nbsp;</span>
+      {/* <span className='onlineAlert'>&nbsp;</span> */}
     </StImg>
   );
 };
