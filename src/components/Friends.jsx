@@ -42,7 +42,7 @@ const Friends = () => {
         </button>
       </nav>
       <section>
-        <h2>모든 친구 - {friendList.length}명</h2>
+        <h2>모든 친구 - {friendList?.length}명</h2>
         <ul>
           {friendList?.map((friend) => (
             <li key={friend.key}>

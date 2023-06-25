@@ -329,7 +329,7 @@ const ChatInputArea = styled.div`
   position: fixed;
   left: 110px;
   bottom: 30px;
-  width: calc(100% - 180px);
+  width: calc(100% - 450px);
   display: flex;
   height: 45px;
   background-color: #383a40;
