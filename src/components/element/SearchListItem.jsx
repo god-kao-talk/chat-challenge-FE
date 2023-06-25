@@ -1,17 +1,9 @@
 import { styled } from 'styled-components';
-import logo from '../../img/discord.svg';
 import ProfileImg from './ProfileImg';
 
 const SearchListItem = ({ searchData }) => {
-  //   createdAt: null
-  // email: "hina@naver.com"
-  // message: "test"
-  // nickname: "히나"
-  // roomCode: "63cf36a8-e09a-4fc1-a5e4-2b100a8f14d0"
-  // type: "TALK"
   const createdDateServerData = new Date(searchData.createdAt);
   const createdDate = createdDateServerData.toLocaleString();
-  console.log('되냐??', createdDate);
 
   return (
     <StSearchListItem>

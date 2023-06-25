@@ -20,7 +20,6 @@ const Search = () => {
   const formSubmitHandler = async (e) => {
     e.preventDefault();
     const searchData = await getSearchMessage(roomCode, searchKeyword);
-    console.log(searchData);
     setSearchList(searchData);
 
     setSearchKeyword('');
