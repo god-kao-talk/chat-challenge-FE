@@ -9,13 +9,18 @@ const SearchListItem = ({ searchData }) => {
   // nickname: "히나"
   // roomCode: "63cf36a8-e09a-4fc1-a5e4-2b100a8f14d0"
   // type: "TALK"
+  const createdDateServerData = new Date(searchData.createdAt);
+  const createdDate = createdDateServerData.toLocaleString();
+  console.log('되냐??', createdDate);
 
   return (
     <StSearchListItem>
-      {/* <ProfileImg imgUrl={searchList.} defaultImgColor={} /> */}
-      <img src={logo} alt='user default profile' style={{ width: '48px', height: '48px' }} />
+      <ProfileImg imgUrl={searchData.imageUrl} defaultImgColor='#5865f2' />
       <StTextWrapper>
-        <StUserName>{searchData.nickname}</StUserName>
+        <div>
+          <StUserName>{searchData.nickname}</StUserName>
+          <StDate>{createdDate}</StDate>
+        </div>
         <StMessage>{searchData.message}</StMessage>
       </StTextWrapper>
     </StSearchListItem>
@@ -35,19 +40,26 @@ const StTextWrapper = styled.div`
   width: calc(100% - 58px);
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  margin-left: 10px;
+  margin-left: 5px;
   box-sizing: border-box;
+  gap: 3px;
 `;
 
 const StUserName = styled.span`
   color: white;
+  font-size: 15px;
   font-weight: 700;
+`;
+
+const StDate = styled.span`
+  margin-left: 5px;
+  font-size: 13px;
 `;
 
 const StMessage = styled.span`
   color: white;
   word-break: break-word;
+  font-size: 15px;
 `;
 
 export default SearchListItem;
