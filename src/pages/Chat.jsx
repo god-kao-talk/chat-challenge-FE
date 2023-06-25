@@ -31,6 +31,7 @@ function Chat() {
     const decodedToken = useDecodeJWT();
     const userNickname = decodedToken.nickname;
     const userEmail = decodedToken.email;
+    const userImg = decodedToken.imgUrl;
 
     // 스크롤 부분(채팅방 입장시 가장 아래로, 채팅로그가 업데이트 될 때마다 가장 아래로)
     const scrollRef = useRef();
@@ -48,20 +49,45 @@ function Chat() {
     });
 
     useEffect(() => {
-        if (data) {
+        if (data !== undefined) {
             console.log('data가 있어! : ', data);
             setChatRoomInfo(data);
-            setMessageList(data.data);
-            console.log('chatRoomInfo 설정중! : ', chatRoomInfo);
 
-            // if (Object.keys(chatRoomInfo).length !== 0) {
-            if (data.status === 200) {
+            // 기존의 채팅방에 들어갈 경우
+            if (data.data && data.data.length > 0) {
+                console.log('채팅 내역 있음');
+                setMessageList([]);
+                setMessageList(data.data);
+            } else {
+                console.log('채팅 내역 없음');
+                setMessageList([]);
+            }
+
+            console.log('chatRoomInfo 설정중! : ', chatRoomInfo);
+            // 소켓 연결했던 채팅룸 리스트 가져오기
+            const storedChatroom = sessionStorage.getItem('roomCodes');
+            const storedArray = JSON.parse(storedChatroom);
+            // 채팅룸 리스트에 없고, 디스코드 첫 방문시에 소켓연결
+            if (storedArray?.includes(roomCode) === false || storedArray === null) {
                 // endpoint로 SockJS 객체, StompClient 객체 생성
                 let Sock = new SockJS(`${process.env.REACT_APP_SERVER_URL}/ws-chat`);
                 console.log('Sock 설정중! : ', Sock);
                 //do Handshake
                 stompClient = over(Sock);
                 console.log('stompClient 설정중! : ', stompClient);
+
+                // 채팅룸 리스트에 저장해두기
+                const storedChatroom = sessionStorage.getItem('roomCodes');
+                let storedArray = [];
+                if (storedChatroom) {
+                    storedArray = JSON.parse(storedChatroom);
+                }
+                // 방코드 추가
+                storedArray.push(roomCode);
+
+                const updatedArrayString = JSON.stringify(storedArray);
+                sessionStorage.setItem('roomCodes', updatedArrayString);
+
                 // connect(header,연결 성공시 콜백,에러발생시 콜백)
                 stompClient.connect({}, onConnected, onError);
             }
@@ -85,6 +111,7 @@ function Chat() {
             email: userEmail,
             roomCode: roomCode,
             message: '',
+            createdAt: new Date().toISOString(),
         };
         stompClient.send('/app/chat/enter', {}, JSON.stringify(chatMessage));
     };
@@ -100,11 +127,14 @@ function Chat() {
             email: userEmail,
             roomCode: roomCode,
             message: input,
+            imageUrl: userImg,
+            createdAt: new Date().toISOString(),
         };
         input && messageInfo.message.trim() && stompClient.send('/app/chat/send', {}, JSON.stringify(messageInfo));
 
         setInput('');
     };
+
     const [copied, setCopied] = useState(false);
 
     const handleCopyClipBoard = (text) => {
@@ -138,7 +168,7 @@ function Chat() {
             </ChatNav>
             <ChatRoomWrapper>
                 <ChatLog ref={scrollRef}>
-                    {messageList.map((item, index) => (
+                    {messageList?.map((item, index) => (
                         <IndividualChat
                             whoIAm={whoIAm}
                             key={index}
@@ -147,7 +177,7 @@ function Chat() {
                             previousType={messageList[index - 1]?.type}
                             previousTime={messageList[index - 1]?.createdAt}
                             commentUserId={item.nickname}
-                            commentUserProfileImgUrl={item.profile_image}
+                            commentUserProfileImgUrl={item.imgUrl}
                             commentDate={item.createdAt}
                             commentContent={item.message}
                             imageFile={item.image}
@@ -183,6 +213,7 @@ const IndividualChat = ({
     previousTime,
     commentContent,
     messagetype,
+    commentUserProfileImgUrl,
 }) => {
     return (
         <>
@@ -191,7 +222,7 @@ const IndividualChat = ({
                     className={previousType !== 'ENTER' && previousId === commentUserId ? 'hide' : ''}
                 >
                     <ProfileImage>
-                        <ProfileImg />
+                        <ProfileImg imgUrl={commentUserProfileImgUrl} />
                     </ProfileImage>
                     <div>
                         <div className="commentInfo">
