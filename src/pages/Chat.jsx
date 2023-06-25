@@ -70,7 +70,7 @@ function Chat() {
 
     const onConnected = () => {
         console.log('roomId에 해당하는 채팅방 구독하기');
-        stompClient.subscribe('/exchange/chat.exchange/room.' + roomCode, function async(message) {
+        stompClient.subscribe('/topic/chat/room/' + roomCode, function async(message) {
             setMessageList((prev) => [...prev, JSON.parse(message.body)]);
         });
 
@@ -86,7 +86,7 @@ function Chat() {
             roomCode: roomCode,
             message: '',
         };
-        stompClient.send('/app/chat.enter', {}, JSON.stringify(chatMessage));
+        stompClient.send('/app/chat/enter', {}, JSON.stringify(chatMessage));
     };
 
     const onError = (err) => {
@@ -100,15 +100,8 @@ function Chat() {
             email: userEmail,
             roomCode: roomCode,
             message: input,
-            createdAt: new Date().toLocaleString('ko-KR', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-            }),
         };
-        input && messageInfo.message.trim() && stompClient.send('/app/chat.send', {}, JSON.stringify(messageInfo));
+        input && messageInfo.message.trim() && stompClient.send('/app/chat/send', {}, JSON.stringify(messageInfo));
 
         setInput('');
     };
@@ -203,13 +196,7 @@ const IndividualChat = ({
                     <div>
                         <div className="commentInfo">
                             <span className="nickname">{commentUserId}</span>
-                            {commentDate.toLocaleString('ko-KR', {
-                                year: 'numeric',
-                                month: '2-digit',
-                                day: '2-digit',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                            })}
+                            {commentDate}
                         </div>
                         <div>{commentContent}</div>
                     </div>
@@ -273,21 +260,24 @@ const IndividualChatWrapper = styled.div`
     .commentInfo {
         font-size: 11px;
         color: #ccc;
+        padding-bottom: 5px;
     }
     .commentInfo > .nickname {
         font-size: 15px;
         color: #e2e2e2;
         padding-right: 7px;
     }
-    .commentInfo.hide {
-        display: none;
-    }
-
-    &.hide > div:first-child {
-        display: none;
-    }
-    &.hide > div:last-child {
-        padding-left: 50px;
+    &.hide {
+        min-height: initial;
+        & .nickname {
+            display: none;
+        }
+        & div:first-child {
+            display: none;
+        }
+        & > div:last-child {
+            padding-left: 50px;
+        }
     }
 `;
 
