@@ -9,6 +9,7 @@ import LoginPage from './pages/LoginPage';
 import RedirectGoogleLogin from './components/RedirectionGoogleLogin';
 import SignupPage from './pages/SignupPage';
 import Chat from './pages/Chat';
+import Search from './components/Search';
 
 const queryClient = new QueryClient();
 
@@ -18,7 +19,10 @@ function App() {
             <BrowserRouter>
                 <Routes>
                     <Route path={PATH_URL.LOGIN} element={<LoginPage />} />
-                    <Route path={PATH_URL.REDIRECT_GOOGLE_LOGIN} element={<RedirectGoogleLogin />} />
+                    <Route
+                        path={PATH_URL.REDIRECT_GOOGLE_LOGIN}
+                        element={<RedirectGoogleLogin />}
+                    />
                     <Route path={PATH_URL.SIGNUP} element={<SignupPage />} />
                     <Route
                         path={PATH_URL.MAIN}
@@ -33,6 +37,7 @@ function App() {
                         element={
                             <Layout>
                                 <Chat />
+                                <Search />
                             </Layout>
                         }
                     />
