@@ -14,8 +14,17 @@ const StFriends = styled.article`
     height: 65px;
     box-sizing: border-box;
     border-bottom: 2px solid #232428;
+    & button{
+    margin-right: 10px;
+    }
     & > .addFriends {
       background-color: #23a559;
+      padding: 7px 15px;
+      border-radius: 3px;
+      font-weight: 700;
+    }
+    & > .addChatroom {
+      background-color: #5865f2;
       padding: 7px 15px;
       border-radius: 3px;
       font-weight: 700;
