@@ -40,6 +40,7 @@ const StAside = styled.aside`
         margin-bottom: 15px;
         overflow: hidden;
         font-size: 13px;
+        text-align: center;
         cursor: pointer;
         transition: 0.3s;
         &:hover{

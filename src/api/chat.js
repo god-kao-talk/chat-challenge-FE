@@ -11,6 +11,17 @@ export const postChatRoom = async (roomName) => {
     // alert(error.response.data.message);
   }
 };
+export const addChatRoom = async (roomCode) => {
+  try {
+    const response = await instance.post('/chat/room', {
+      roomCode: roomCode,
+    });
+    return response;
+  } catch (error) {
+    console.error('postChatroom Axios Error', error);
+    // alert(error.response.data.message);
+  }
+};
 
 export const getChatRoomList = async () => {
   try {

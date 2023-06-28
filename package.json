@@ -29,6 +29,7 @@
     "prettier": "^2.8.8",
     "query-string": "^8.1.0",
     "react": "^18.2.0",
+    "react-copy-to-clipboard": "^5.1.0",
     "react-datepicker": "^4.11.0",
     "react-dom": "^18.2.0",
     "react-google-login": "^5.2.2",

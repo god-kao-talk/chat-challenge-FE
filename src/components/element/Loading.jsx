@@ -16,7 +16,7 @@ export default Loading;
 
 const StDots = styled.div`
     position: relative;
-    width: 100%;
+    width: calc(100% - 300px);
     height: 100%;
     & .stage {
         position: absolute;
@@ -28,7 +28,7 @@ const StDots = styled.div`
         position: relative;
         width: 10px;
         height: 10px;
-        transform: translate(100%, -60%);
+        transform: translate(375%, -300%);
         border-radius: 5px;
         background-color: transparent;
         color: transparent;

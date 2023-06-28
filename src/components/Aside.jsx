@@ -8,12 +8,14 @@ import logo from '../img/discord.svg';
 import Portal from '../utils/portal';
 import { getChatRoomList, postChatRoom } from '../api/chat';
 import { styled } from 'styled-components';
+import { useRecoilState } from 'recoil';
+import { chatroomListState } from '../recoil/chatroomList';
 
 const Aside = () => {
     const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { inputData, setInputData, inputChangeHandler } = useInput();
-    const [chatRoomList, setChatRoomList] = useState(null);
+    const [isChatRoomUpdate, setIsChatRoomUpdate] = useRecoilState(chatroomListState);
 
     // 채팅방 생성 버튼
     const postChatRoomSubmitHandler = async () => {
@@ -40,7 +42,7 @@ const Aside = () => {
 
     const fetchChatroomList = async () => {
         const chatRoomList = await getChatRoomList();
-        setChatRoomList(chatRoomList);
+        setIsChatRoomUpdate(chatRoomList);
     };
 
     useEffect(() => {
@@ -57,9 +59,9 @@ const Aside = () => {
                     <BsPlusLg />
                 </button>
                 <ul>
-                    {chatRoomList &&
-                        chatRoomList.map((room) => (
-                            <li key={room.roomCode} onClick={() => enterChatRoomHandler(room.roomCode)}>
+                    {isChatRoomUpdate &&
+                        isChatRoomUpdate.map((room, index) => (
+                            <li key={index} onClick={() => enterChatRoomHandler(room.roomCode)}>
                                 <p>{room.roomName}</p>
                             </li>
                         ))}
